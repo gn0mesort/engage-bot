@@ -59,5 +59,6 @@ typings/
 
 # engage-bot files
 scores.json
+scores.*.json
 config.json
 img/
