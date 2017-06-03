@@ -17,7 +17,7 @@ var Bot = function (config) {
   this._readLine = rl
   this.config = config || new Config()
   this.voiceUsers = []
-  this.scores = {}
+  this.scores = null
   this.commands = require('./default.commands.js').consoleCommands
   this.webCommands = require('./default.commands.js').webCommands
   this.client = new Discord.Client()
@@ -150,7 +150,7 @@ var Bot = function (config) {
   }).on('close', function () {
     utils.console_out(`\nExiting ${self.config.botName}...`)
     fs.writeFileSync('./config.json', JSON.stringify(self.config, null, ' '))
-    fs.writeFileSync('./scores.json', JSON.stringify(self.scores, null, ' '))
+    if (self.scores) { fs.writeFileSync('./scores.json', JSON.stringify(self.scores, null, ' ')) }
     self.client.destroy()
     process.exit(0)
   })
