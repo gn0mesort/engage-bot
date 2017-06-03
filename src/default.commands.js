@@ -191,6 +191,11 @@ Object.assign(commandBundle.consoleCommands, {
     if (args.length >= 2) {
       self.config[args[0].trim()] = args[1].trim()
     }
+  },
+  'leave-guild': function (message, self) {
+    for (let guild of self.client.guilds.array()) {
+      if (guild.name === message.trim()) { guild.leave() }
+    }
   }
 })
 
