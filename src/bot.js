@@ -45,7 +45,9 @@ var Bot = function (config) {
     let r = false
     if (message.channel.type === 'text') {
       let guildMember = message.guild.members.get(message.author.id)
-      // TODO check for Roles
+      for (let roleId of self.config.adminRoles) {
+        r |= guildMember.roles.has(roleId)
+      }
       if (guildMember.permissions.has(self.config.adminPermissions)) { r = true }
       else if (self.config.adminUsers.indexOf(message.author.id) !== -1) { r = true }
     }

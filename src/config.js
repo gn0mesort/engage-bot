@@ -4,6 +4,7 @@ var Config = function () {
   this.commandPrefix = '--'
   this.botName = 'engage-bot'
   this.defaultMessage = `${this.botName} was here!`
+  this.aboutMessage = ''
   this.displayAllMessages = false
   this.adminRoles = [] // Roles that allow bot administration
   this.adminPermissions = [Permissions.FLAGS.ADMINISTRATOR] // If a user has all these privileges they are an admin

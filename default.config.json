@@ -2,6 +2,7 @@
  "commandPrefix": "--",
  "botName": "engage-bot",
  "defaultMessage": "engage-bot was here!",
+ "aboutMessage": "",
  "displayAllMessages": false,
  "adminRoles": [],
  "adminPermissions": [

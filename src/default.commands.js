@@ -114,7 +114,10 @@ Object.assign(commandBundle.webCommands, {
       })
     })
     return `${author} Help is on the way!`
-  }, 'Display this help message.')
+  }, 'Display this help message.'),
+  about: new WebCommand(function (message, author, self) {
+    return `\`\`\`\n${self.config.aboutMessage}\n\`\`\``
+  }, 'Display information about this bot')
 })
 
 // Assign default console commands
@@ -168,6 +171,14 @@ Object.assign(commandBundle.consoleCommands, {
     } catch (err) {
       utils.console_error(err)
       self._readLine.prompt()
+    }
+  },
+  roleIds: function (message, self) {
+    for (let guild of self.client.guilds.array()) {
+      utils.console_out(`${guild.name}:`)
+      for (let role of guild.roles.array()) {
+        utils.console_out(`  ${role.name} : ${role.id}`)
+      }
     }
   }
 })
