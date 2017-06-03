@@ -180,6 +180,17 @@ Object.assign(commandBundle.consoleCommands, {
         utils.console_out(`  ${role.name} : ${role.id}`)
       }
     }
+  },
+  'get-config': function (message, self) {
+    let obj = message.trim()
+    if (obj) { utils.console_out(self.config[obj]) }
+    else { utils.console_out(self.config) }
+  },
+  'set-config': function (message, self) {
+    let args = message.split(' ')
+    if (args.length >= 2) {
+      self.config[args[0].trim()] = args[1].trim()
+    }
   }
 })
 
