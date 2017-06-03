@@ -13,7 +13,7 @@ var Config = function () {
     typing: 1,
     speaking: 100
   }
-  this.scoreUnit = ''
+  this.scoreUnit = 'points'
   this.avatarPath = ''
   this.token = ''
 }

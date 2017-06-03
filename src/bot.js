@@ -106,10 +106,12 @@ var Bot = function (config) {
     }
     self.scores = fs.existsSync('./scores.json') ? JSON.parse(fs.readFileSync('./scores.json', 'utf8')) : {}
     utils.console_out(`${self.config.botName} started!`)
-    self.client.user.setAvatar(self.config.avatarPath).catch(function (err) {
-      utils.console_error(err)
-      rl.prompt()
-    })
+    if (self.config.avatarPath) {
+      self.client.user.setAvatar(self.config.avatarPath).catch(function (err) {
+        utils.console_error(err)
+        rl.prompt()
+      })
+    }
     rl.prompt()
   }).on('disconnect', function (error) {
     utils.console_error(error.reason)

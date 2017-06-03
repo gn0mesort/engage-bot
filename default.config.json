@@ -1,0 +1,19 @@
+{
+ "commandPrefix": "--",
+ "botName": "engage-bot",
+ "defaultMessage": "engage-bot was here!",
+ "displayAllMessages": false,
+ "adminRoles": [],
+ "adminPermissions": [
+  8
+ ],
+ "adminUsers": [],
+ "scoring": {
+  "message": 10,
+  "typing": 1,
+  "speaking": 100
+ },
+ "scoreUnit": "points",
+ "avatarPath": "",
+ "token": ""
+}
