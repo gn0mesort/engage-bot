@@ -38,9 +38,17 @@ Object.assign(commandBundle.webCommands, {
     return `${author} ${self.client.ping.toFixed(2)}ms`
   }, 'Respond with the client ping in milliseconds.'),
   score: new WebCommand(function (message, author, self) {
-    let output = author.id in self.scores ? self.scores[author.id].score : 0
-    return `${author} You currently have ${output} ${self.config.scoreUnit}`
-  }, 'Display your current score.'),
+    let args = message.trim().split(' ')
+    let id = args.length > 0 ? args[0].trim().replace(/<@!?([^&]+)>/g, '$1') : ''
+    if (id in self.scores) {
+      return `${author} ${self.scores[id].tag} has ${self.scores[id].score} ${self.config.scoreUnit}`
+    } else if (id) {
+      return `${author} That user wasn't found or doesn't have a score yet!`
+    } else {
+      let output = author.id in self.scores ? self.scores[author.id].score : 0
+      return `${author} You currently have ${output} ${self.config.scoreUnit}`
+    }
+  }, 'Display your current score or the score of a user you mention.\nArguments:\n`user`: The user whose score you want to see. If this is omitted your score will be displayed.'),
   top: new WebCommand(function (message, author, self) {
     let scoreBoard = []
     let output = `${author}\nTOP USERS:\n`
