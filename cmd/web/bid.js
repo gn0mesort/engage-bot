@@ -5,7 +5,7 @@ module.exports = {
     let args = message.split(' ')
     if (args.length >= 2 && self.scores[author.id]) {
       let inValue = self.validateScore(Number(args[0]))
-      let inData = args[1]
+      let inData = args.slice(1).join(' ')
       if (self.scores[author.id].score && inValue <= self.scores[author.id].score && inValue > 0) {
         self.scores[author.id]['bid'] = {
           value: inValue,
