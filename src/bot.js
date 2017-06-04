@@ -132,8 +132,10 @@ var Bot = function (config) {
     if (!test) { self.autoScore(message.author, 'message') }
     rl.prompt()
   }).on('typingStop', function (channel, user) {
-    self.autoScore(user, 'typing')
-    rl.prompt()
+    if (channel.type === 'text') {
+      self.autoScore(user, 'typing')
+      rl.prompt()
+    }
   }).on('voiceStateUpdate', function (oldMember, newMember) {
     if (newMember.voiceChannel) {
       if (self.voiceUsers.indexOf(newMember) === -1) {
