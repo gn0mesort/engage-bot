@@ -86,7 +86,7 @@ var Bot = function (config) {
       }
       if (tickCount === 6) {
         utils.console_out('Writing score data to disk...')
-        fs.writeFileSync('./scores.bak.json', fs.readFileSync('./scores.json'))
+        if (fs.existsSync('./scores.json')) { fs.writeFileSync('./scores.bak.json', fs.readFileSync('./scores.json')) }
         fs.writeFileSync('./scores.json', JSON.stringify(self.scores, null, ' '))
         tickCount = 0
         rl.prompt()

@@ -199,12 +199,16 @@ Object.assign(commandBundle.consoleCommands, {
   }
 })
 
-for (let path of fs.readdirSync('./cmd/web')) {
-  Object.assign(commandBundle.webCommands, require('../cmd/web/' + path))
+if (fs.existsSync('./cmd/web')) {
+  for (let path of fs.readdirSync('./cmd/web')) {
+    Object.assign(commandBundle.webCommands, require('../cmd/web/' + path))
+  }
 }
 
-for (let path of fs.readdirSync('./cmd/console')) {
-  Object.assign(commandBundle.consoleCommands, require('../cmd/console/' + path))
+if (fs.existsSync('./cmd/console')) {
+  for (let path of fs.readdirSync('./cmd/console')) {
+    Object.assign(commandBundle.consoleCommands, require('../cmd/console/' + path))
+  }
 }
 
 module.exports = commandBundle
