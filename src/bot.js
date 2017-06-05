@@ -69,7 +69,7 @@ var Bot = function (config) {
     return r
   }
   this.autoScore = function (user, type) {
-    if (!user.bot) {
+    if (!user.bot && self.config.scoring[type] !== 0) {
       if (!(user.id in self.scores)) { self.scores[user.id] = new UserScore(self.client.users.get(user.id).tag) }
       self.scores[user.id].score += self.validateScore(self.config.scoring[type])
       utils.console_out(`${user.tag}'s score increased by ${self.config.scoring[type]}`)
@@ -78,7 +78,7 @@ var Bot = function (config) {
 
   this.client.on('ready', function () {
     self.client.setInterval(function (users) {
-      if (users.length > 0) {
+      if (users.length > 1) {
         for (let user of users) {
           self.autoScore(user.user, 'speaking')
         }
