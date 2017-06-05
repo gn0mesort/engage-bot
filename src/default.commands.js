@@ -61,7 +61,7 @@ Object.assign(commandBundle.webCommands, {
       else { return 0 }
     })
     for (let i = 0; i < (scoreBoard.length <= 10 ? scoreBoard.length : 10); ++i) {
-      output += `${i + 1}. ${scoreBoard[i].tag.padEnd(20)} : ${scoreBoard[i].score} ${self.config.scoreUnit}\n`
+      output += `${i + 1}. ${scoreBoard[i].tag} : ${scoreBoard[i].score} ${self.config.scoreUnit}\n`
     }
     return output || 'No scores yet!'
   }, 'Display the top 10 users of this server.'),
