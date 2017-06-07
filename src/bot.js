@@ -58,7 +58,7 @@ class Bot {
       this.client.setInterval(function (data) {
         if (data.voiceUsers.length > 1) {
           for (let voiceUser of data.voiceUsers) {
-            scoreUser(voiceUser.user, 'speaking', this)
+            scoreUser(voiceUser.user, 'speaking', data)
           }
           data.rl.prompt()
         }
