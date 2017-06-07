@@ -7,7 +7,7 @@ const readline = require('readline')
 const fs = require('fs')
 
 const scoreUser = function (user, type, self) {
-  if (!user.bot) {
+  if (!user.bot && self.config.scoring[type] !== 0) {
     if (user.id in self.scores) {
       self.scores[user.id].score += self.config.scoring[type]
     } else {
