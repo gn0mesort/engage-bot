@@ -17,6 +17,8 @@ class Config {
       typing: 1,
       speaking: 20
     }
+    this.bonus = options.bonus || 100
+    this.bonusInterval = options.bonusInterval || 86400000
     this.speakingInterval = options.speakingInterval || 10000
     this.saveInterval = options.saveInterval || 60000
     this.unit = options.unit || 'points'

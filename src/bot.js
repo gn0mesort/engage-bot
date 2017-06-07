@@ -6,14 +6,30 @@ const Discord = require('discord.js')
 const readline = require('readline')
 const fs = require('fs')
 
+
+
 const scoreUser = function (user, type, self) {
   if (!user.bot && self.config.scoring[type] !== 0) {
     if (user.id in self.scores) {
       self.scores[user.id].score += self.config.scoring[type]
+      if ('bonus' in self.scores[user.id].inventory && self.scores[user.id].inventory['bonus'] + self.config.bonusInterval < Date.now()) {
+        getBonus(user, self)
+      } else if (!('bonus' in self.scores[user.id].inventory)) {
+        getBonus(user, self)
+      }
     } else {
       self.scores[user.id] = new UserScore(user.tag, self.config.scoring[type])
+      getBonus(user, self)
     }
     botconsole.out(`${user.tag}'s score increased by ${self.config.scoring[type]}`)
+  }
+}
+
+const getBonus = function (user, self) {
+  if (self.config.bonus !== 0) {
+    self.scores[user.id].score += self.config.bonus
+    self.scores[user.id].inventory['bonus'] = Date.now()
+    botconsole.out(`DAILY BONUS: ${user.tag}'s score increased by ${self.config.bonus}`)
   }
 }
 
