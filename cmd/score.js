@@ -103,5 +103,22 @@ module.exports = {
     },
     'Display the top 10 users of this server.',
     Command.FLAG.GENERAL
+  ),
+  'bonus': new Command(
+    function (message, self) {
+      if (message.author.id in self.scores) {
+        if ('bonus' in self.scores[message.author.id].inventory) {
+          return `The bonus is ${self.config.bonus} ${self.config.unit}.\nYou received your last bonus at ${new Date(self.scores[message.author.id].inventory['bonus']).toUTCString()}!\nYou may earn another bonus at ${new Date(self.scores[message.author.id].inventory['bonus'] + self.config.bonusInterval).toUTCString()}!`
+        } else {
+          return 'You have not yet earned a bonus!'
+        }
+      } else if (message.author === 'CONSOLE') {
+        return `The bonus is ${self.config.bonus} ${self.config.unit}.\nYou may earn it every ${self.config.bonusInterval}ms.`
+      } else {
+        return 'You have not yet earned a bonus!'
+      }
+    },
+    'Display information about bonuses.',
+    Command.FLAG.GENERAL
   )
 }
