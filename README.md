@@ -39,28 +39,6 @@ module.exports = {
 
 ```
 
-The `Command` constructor takes three parameters but only the first parameter is required.
+For more information on `Command`s read [command.js](https://github.com/gn0mesort/engage-bot/blob/master/src/command.js).
 
-You must give every command a fuction that accepts the `message` and `self` parameters. 
-
-`message` is the message that triggered the function and it will include at least the following two properties:
-
----
-`author`: the author of the message (if it is a console command this will contain the value `'CONSOLE'`).
-
-`content`: the raw content of the message (without the name of the command and potentially a prefix).
-
----
-
-In most cases `message` will be a `discord.js` `Message` object and contain all the properties that it was received with.
-
-`self` is a reference to the current instance of the bot that triggered the command
-
-Optionally `Command` accepts the following two parameters:
-
----
-`help`: the help message associated with the command. This defaults to `''`.
-
-`permission`: the permission level required to trigger the command. This defaults to `Command.FLAG.CONSOLE`
-
----
+For some simple example `Command` modules you may want to read [utility.js](https://github.com/gn0mesort/engage-bot/blob/master/cmd/utility.js).
