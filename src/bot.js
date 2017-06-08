@@ -107,7 +107,9 @@ class Bot {
         let response = this.handleCommand(message)
         if (response) {
           botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`)
-          message.channel.send(`${message.author} ${response}`)
+          message.channel.send(`${message.author} ${response}`).catch(function (err) {
+            botconsole.error(err)
+          })
         } else {
           if (this.config.logAllMessages || message.author.id === this.client.user.id) {
             botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`)

@@ -16,7 +16,7 @@
     "url": "https://github.com/gn0mesort/engage-bot.git"
   },
   "author": "gn0mesort",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "dependencies": {
     "discord.js": "^11.1.0",
     "erlpack": "github:hammerandchisel/erlpack",

@@ -1,5 +1,6 @@
 const Command = require('../src/command.js')
 const botconsole = require('../src/botconsole.js')
+const fs = require('fs')
 
 module.exports = {
   'help': new Command(
@@ -26,7 +27,8 @@ module.exports = {
   ),
   'about': new Command(
     function (message, self) {
-      return message.author === 'CONSOLE' ? self.config.aboutMessage : `\`\`\`\n${self.config.aboutMessage}\n\`\`\``
+      let npmPackage = JSON.parse(fs.readFileSync('./package.json'))
+      return message.author === 'CONSOLE' ? `${npmPackage.name}\n${npmPackage.version}\n${npmPackage.license}\n${npmPackage.repository.url.replace('.git', '')}\n${self.config.aboutMessage}` : `\`\`\`\n${npmPackage.name}\n${npmPackage.version}\n${npmPackage.license}\n${npmPackage.repository.url.replace('.git', '')}\n${self.config.aboutMessage}\n\`\`\``
     },
     'Display information about this bot.',
     Command.FLAG.GENERAL
