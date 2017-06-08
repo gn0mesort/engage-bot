@@ -58,6 +58,7 @@ Optionally `Command` accepts the following two parameters:
 
 ---
 `help` is the help message associated with the command. This defaults to `''`.
+
 `permission` is the permission level required to trigger the command. This defaults to `Command.FLAG.CONSOLE`
 
 ---
