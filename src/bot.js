@@ -172,6 +172,9 @@ class Bot {
         botconsole.out(`${newMember.user.tag} left ${oldMember.voiceChannel}`) // Log member left
       }
       this.rl.prompt() // Prompt stdin
+    }).on('disconnect', (event) => { // On WebSocket disconnection
+      botconsole.error(`WebSocket Error ${event.code}: ${event.reason}`) // Log event
+      process.exit(1) // Exit with an error code of 1
     })
 
     this.rl.on('line', (line) => { // Trigger this event when the administrator enters a command

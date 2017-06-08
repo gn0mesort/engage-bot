@@ -1,10 +1,11 @@
-const fs = require('fs')
+// Requires
+const fs = require('fs') // Node filesystem library
 
-var commands = {}
+const commands = {} // Create commands object
 
-if (fs.existsSync('./cmd')) {
-  for (let path of fs.readdirSync('./cmd')) {
-    Object.assign(commands, require('../cmd/' + path))
+if (fs.existsSync('./cmd')) { // If the ./cmd directory exists
+  for (let path of fs.readdirSync('./cmd')) { // For every file in ./cmd
+    Object.assign(commands, require('../cmd/' + path)) // Merge command modules into commands
   }
 }
 
