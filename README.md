@@ -52,13 +52,15 @@ You must give every command a fuction that accepts the `message` and `self` para
 
 ---
 
+In most cases `message` will be a `discord.js` `Message` object and contain all the properties that it was received with.
+
 `self` is a reference to the current instance of the bot that triggered the command
 
 Optionally `Command` accepts the following two parameters:
 
 ---
-`help` is the help message associated with the command. This defaults to `''`.
+`help`: the help message associated with the command. This defaults to `''`.
 
-`permission` is the permission level required to trigger the command. This defaults to `Command.FLAG.CONSOLE`
+`permission`: the permission level required to trigger the command. This defaults to `Command.FLAG.CONSOLE`
 
 ---
