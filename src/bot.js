@@ -92,8 +92,10 @@ class Bot {
         for (let channel of guild.channels.array()) {
           if (channel.type === 'voice') {
             for (let member of channel.members.array()) {
-              this.voiceUsers.push(member)
-              botconsole.out(`Voice user ${member.user.tag} found!`)
+              if (!member.user.bot) {
+                this.voiceUsers.push(member)
+                botconsole.out(`Voice user ${member.user.tag} found!`)
+              }
             }
           }
         }
@@ -121,7 +123,7 @@ class Bot {
       this.rl.prompt()
     }).on('voiceStateUpdate', (oldMember, newMember) => {
       if (newMember.voiceChannel) {
-        if (this.voiceUsers.indexOf(newMember) === -1) {
+        if (this.voiceUsers.indexOf(newMember) === -1 && !newMember.user.bot) {
           this.voiceUsers.push(newMember)
           botconsole.out(`${newMember.user.tag} joined ${newMember.voiceChannel}`)
         }
