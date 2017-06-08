@@ -1,4 +1,9 @@
 /**
+ * botconsole.js
+ * Defines console output for this bot
+ */
+
+/**
  * botconsole object
  */
 const botconsole = {

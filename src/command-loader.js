@@ -1,3 +1,8 @@
+/**
+ * command-loader.js
+ * Loads commands from ./cmd directory
+ */
+
 // Requires
 const fs = require('fs') // Node filesystem library
 

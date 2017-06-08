@@ -1,4 +1,9 @@
 /**
+ * command.js
+ * Defines Command objects and related behavior
+ */
+
+/**
  * Permissions flags
  */
 const FLAG = {
