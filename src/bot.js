@@ -6,8 +6,6 @@ const Discord = require('discord.js')
 const readline = require('readline')
 const fs = require('fs')
 
-
-
 const scoreUser = function (user, type, self) {
   if (!user.bot && self.config.scoring[type] !== 0) {
     if (user.id in self.scores) {
@@ -121,7 +119,8 @@ class Bot {
         scoreUser(user, 'typing', this)
       }
       this.rl.prompt()
-    }).on('voiceStatusUpdate', function (oldMember, newMember) {
+    }).on('voiceStateUpdate', (oldMember, newMember) => {
+      botconsole.out('SOMEONE DID SOMETHING')
       if (newMember.voiceChannel) {
         if (this.voiceUsers.indexOf(newMember) === -1) {
           this.voiceUsers.push(newMember)
