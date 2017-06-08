@@ -120,7 +120,6 @@ class Bot {
       }
       this.rl.prompt()
     }).on('voiceStateUpdate', (oldMember, newMember) => {
-      botconsole.out('SOMEONE DID SOMETHING')
       if (newMember.voiceChannel) {
         if (this.voiceUsers.indexOf(newMember) === -1) {
           this.voiceUsers.push(newMember)
