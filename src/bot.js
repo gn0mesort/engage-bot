@@ -175,6 +175,7 @@ class Bot {
           }
         }
       }
+      this.client.user.setGame(`v${JSON.parse(fs.readFileSync('./package.json')).version}`) // Display current Bot version as status
       this.rl.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
       if (message.channel.type === 'text') { // If the message is from a text channel
