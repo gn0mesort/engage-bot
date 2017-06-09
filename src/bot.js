@@ -108,10 +108,12 @@ const addVoiceUser = function (guildMember, self) {
  * @param {Bot} self The current bot instance
  */
 const removeVoiceUser = function (guildMember, channel, self) {
-  let index = self.voiceUsers[channel.id].indexOf(guildMember) // Get the index of the user
-  if (index !== -1) { // If the user was in the channel
-    self.voiceUsers[channel.id].splice(index, 1) // Remove the user
-    botconsole.out(`${guildMember.user.tag} left ${channel}`) // Log member left
+  if (channel && channel.id in self.voiceUsers) { // Ensure that the channel exists and is in the voiceUsers table
+    let index = self.voiceUsers[channel.id].indexOf(guildMember) // Get the index of the user
+    if (index !== -1) { // If the user was in the channel
+      self.voiceUsers[channel.id].splice(index, 1) // Remove the user
+      botconsole.out(`${guildMember.user.tag} left ${channel}`) // Log member left
+    }
   }
 }
 
@@ -195,13 +197,13 @@ class Bot {
         scoreUser(user, 'typing', this) // Score the user
       }
       this.rl.prompt() // Prompt stdin
-    }).on('voiceStateUpdate', (oldMember, newMember) => { // Trigger this even when a voice state update occurs
+    }).on('voiceStateUpdate', (oldMember, newMember) => { // Trigger this event when a voice state update occurs
       if (newMember.voiceChannel && !oldMember.voiceChannel) { // If the newMember has a voice channel
         addVoiceUser(newMember, this) // Attempt to add the user
       } else if (newMember.voiceChannel && oldMember.voiceChannel && newMember.voiceChannelID !== oldMember.voiceChannelID) { // If the user has changed channels
         removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user from the old channel
         addVoiceUser(newMember, this) // Add the user to the new channel
-      } else if (!newMember.voiceChannel) { // Otherwise if the user no longer has a channel
+      } else if (!newMember.voiceChannel && oldMember.voiceChannel) { // Otherwise if the user no longer has a channel
         removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user
       }
       if (newMember.voiceChannel && newMember.selfDeaf || newMember.serverDeaf) { // If the user is in a voice chat but deafened
@@ -214,6 +216,10 @@ class Bot {
     }).on('disconnect', (event) => { // On WebSocket disconnection
       botconsole.error(`WebSocket Error ${event.code}: ${event.reason}`) // Log event
       process.exit(1) // Exit with an error code of 1
+    }).on('channelDelete', (channel) => { // Trigger this event when a channel is deleted
+      if (channel.id in this.voiceUsers) { // If the channel was in the voiceUsers table
+        this.voiceUsers[channel.id] = [] // Clear the channel
+      }
     })
 
     this.rl.on('line', (line) => { // Trigger this event when the administrator enters a command
