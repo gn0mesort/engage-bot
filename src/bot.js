@@ -90,12 +90,14 @@ const parseScores = function (scores) {
  * @param {Bot} self The current bot instance
  */
 const addVoiceUser = function (guildMember, self) {
-  if (guildMember.voiceChannelID in self.voiceUsers && self.voiceUsers[guildMember.voiceChannelID].indexOf(guildMember) === -1) { // If the channel is already in the table and guildMember is not in voiceUsers
-    self.voiceUsers[guildMember.voiceChannelID].push(guildMember) // Push guildMember into the correct channel
-    botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
-  } else if (!(guildMember.voiceChannelID in self.voiceUsers)) { // Otherwise if the channel isn't in the table
-    self.voiceUsers[guildMember.voiceChannelID] = [guildMember] // Create the channel and add guildMember
-    botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
+  if (!guildMember.selfDeaf && !guildMember.serverDeaf) { // If not deafened
+    if (guildMember.voiceChannelID in self.voiceUsers && self.voiceUsers[guildMember.voiceChannelID].indexOf(guildMember) === -1) { // If the channel is already in the table and guildMember is not in voiceUsers
+      self.voiceUsers[guildMember.voiceChannelID].push(guildMember) // Push guildMember into the correct channel
+      botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
+    } else if (!(guildMember.voiceChannelID in self.voiceUsers)) { // Otherwise if the channel isn't in the table
+      self.voiceUsers[guildMember.voiceChannelID] = [guildMember] // Create the channel and add guildMember
+      botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
+    }
   }
 }
 
@@ -163,7 +165,7 @@ class Bot {
           if (channel.type === 'voice') { // If the channel is a voice channel
             this.voiceUsers[channel.id] = []
             for (let member of channel.members.array()) { // For every member of the channel
-              if (!member.user.bot) { // If the member is not a bot
+              if (!member.user.bot && !member.selfDeaf && !member.serverDeaf) { // If the member is not a bot or deafened
                 this.voiceUsers[channel.id].push(member) // Add this member to voiceUsers
                 botconsole.out(`Voice user ${member.user.tag} found!`) // Output user found
               }
@@ -202,11 +204,12 @@ class Bot {
       } else if (!newMember.voiceChannel) { // Otherwise if the user no longer has a channel
         removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user
       }
-      if (newMember.voiceChannel && (newMember.selfDeaf || newMember.serverDeaf)) { // If the user is deafened
+      if (newMember.voiceChannel && newMember.selfDeaf || newMember.serverDeaf) { // If the user is in a voice chat but deafened
         removeVoiceUser(newMember, newMember.voiceChannel, this) // Remove the user
-      } else if (newMember.voiceChannel) { // If the user is undeafened
-        addVoiceUser(newMember, this) // Add the user
+      } else if (newMember.voiceChannel) { // Otherwise if the user is not deafened
+        addVoiceUser(newMember, this) // Attempt to add the user
       }
+
       this.rl.prompt() // Prompt stdin
     }).on('disconnect', (event) => { // On WebSocket disconnection
       botconsole.error(`WebSocket Error ${event.code}: ${event.reason}`) // Log event
