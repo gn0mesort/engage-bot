@@ -141,9 +141,7 @@ class Bot {
         for (let channel in data.voiceUsers) { // For every channel in voiceUsers
           if (data.voiceUsers[channel].length > 1) { // If the channel has more than one member
             for (let voiceUser of data.voiceUsers[channel]) { // For every member of the channel
-              if (!voiceUser.selfDeaf && !voiceUser.serverDeaf) { // If the member isn't deafened
-                scoreUser(voiceUser.user, 'speaking', data) // Score the user
-              }
+              scoreUser(voiceUser.user, 'speaking', data) // Score the user
             }
           }
         }
@@ -203,6 +201,11 @@ class Bot {
         addVoiceUser(newMember, this) // Add the user to the new channel
       } else if (!newMember.voiceChannel) { // Otherwise if the user no longer has a channel
         removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user
+      }
+      if (newMember.voiceChannel && (newMember.selfDeaf || newMember.serverDeaf)) { // If the user is deafened
+        removeVoiceUser(newMember, newMember.voiceChannel, this) // Remove the user
+      } else if (newMember.voiceChannel) { // If the user is undeafened
+        addVoiceUser(newMember, this) // Add the user
       }
       this.rl.prompt() // Prompt stdin
     }).on('disconnect', (event) => { // On WebSocket disconnection
