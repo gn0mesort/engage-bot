@@ -1,6 +1,6 @@
 {
   "name": "engage-bot",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A Discord bot that encourages user engagement.",
   "main": "index.js",
   "scripts": {
