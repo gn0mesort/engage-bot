@@ -15,7 +15,7 @@ module.exports = {
       }
     }
     output = JSON.stringify(safeJSONStringify.ensureProperties(root), null, ' ') || 'undefined'
-    if (output.length > 1900) {
+    if (output.length > 1900 && message.author !== 'CONSOLE') {
       output = 'OUTPUT TOO LONG'
     }
     return message.author === 'CONSOLE' ? output : `\n\`\`\`json\n${output}\n\`\`\``

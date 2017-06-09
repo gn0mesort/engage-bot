@@ -85,6 +85,35 @@ const parseScores = function (scores) {
 }
 
 /**
+ * Add a user to the voiceUsers table
+ * @param {Discord.GuildMember} guildMember The guildMember that represents the user to add
+ * @param {Bot} self The current bot instance
+ */
+const addVoiceUser = function (guildMember, self) {
+  if (guildMember.voiceChannelID in self.voiceUsers && self.voiceUsers[guildMember.voiceChannelID].indexOf(guildMember) === -1) { // If the channel is already in the table and guildMember is not in voiceUsers
+    self.voiceUsers[guildMember.voiceChannelID].push(guildMember) // Push guildMember into the correct channel
+    botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
+  } else if (!(guildMember.voiceChannelID in self.voiceUsers)) { // Otherwise if the channel isn't in the table
+    self.voiceUsers[guildMember.voiceChannelID] = [guildMember] // Create the channel and add guildMember
+    botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
+  }
+}
+
+/**
+ * Remove a user from the voiceUsers table
+ * @param {Discord.GuildMember} guildMember The GuildMember that represents the user to remove
+ * @param {Discord.VoiceChannel} channel The channel to remove the user from
+ * @param {Bot} self The current bot instance
+ */
+const removeVoiceUser = function (guildMember, channel, self) {
+  let index = self.voiceUsers[channel.id].indexOf(guildMember) // Get the index of the user
+  if (index !== -1) { // If the user was in the channel
+    self.voiceUsers[channel.id].splice(index, 1) // Remove the user
+    botconsole.out(`${guildMember.user.tag} left ${channel}`) // Log member left
+  }
+}
+
+/**
  * Defines the main behavior of engage-bot
  */
 class Bot {
@@ -103,18 +132,22 @@ class Bot {
     this.commands = require('./command-loader.js') // Load command modules
     this.client = new Discord.Client() // Create the client
     this.scores = parseScores(scores) || {} // Parse scores or set scores to an empty object
-    this.voiceUsers = [] // Create array of users in voice chat
+    this.voiceUsers = {} // Create a table of users in voice chat
 
     this.client.on('ready', () => { // Trigger this event when the client logs in successfully
       botconsole.out('Login successful') // Output login message
       botconsole.out(`Starting ${this.config.name}...`) // Output startup message
       this.client.setInterval(function (data) { // Set a function for checking if users are in voice chat
-        if (data.voiceUsers.length > 1) { // If more than one person is in voice chat
-          for (let voiceUser of data.voiceUsers) { // For every voice user
-            scoreUser(voiceUser.user, 'speaking', data) // Apply score to the user
+        for (let channel in data.voiceUsers) { // For every channel in voiceUsers
+          if (data.voiceUsers[channel].length > 1) { // If the channel has more than one member
+            for (let voiceUser of data.voiceUsers[channel]) { // For every member of the channel
+              if (!voiceUser.selfDeaf && !voiceUser.serverDeaf) { // If the member isn't deafened
+                scoreUser(voiceUser.user, 'speaking', data) // Score the user
+              }
+            }
           }
-          data.rl.prompt() // Prompt stdin
         }
+        data.rl.prompt() // Prompt stdin
       }, this.config.speakingInterval, this)
       this.client.setInterval(function (data) { // Set a function for writing score data to the disk
         botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
@@ -130,9 +163,10 @@ class Bot {
       for (let guild of this.client.guilds.array()) { // For every guild this bot is a member of
         for (let channel of guild.channels.array()) { // For every channel in the current guild
           if (channel.type === 'voice') { // If the channel is a voice channel
+            this.voiceUsers[channel.id] = []
             for (let member of channel.members.array()) { // For every member of the channel
               if (!member.user.bot) { // If the member is not a bot
-                this.voiceUsers.push(member) // Add this member to voiceUsers
+                this.voiceUsers[channel.id].push(member) // Add this member to voiceUsers
                 botconsole.out(`Voice user ${member.user.tag} found!`) // Output user found
               }
             }
@@ -162,14 +196,13 @@ class Bot {
       }
       this.rl.prompt() // Prompt stdin
     }).on('voiceStateUpdate', (oldMember, newMember) => { // Trigger this even when a voice state update occurs
-      if (newMember.voiceChannel) { // If the newMember has a voice channel
-        if (this.voiceUsers.indexOf(newMember) === -1 && !newMember.user.bot) { // If the newMember is not in voice users and not a bot
-          this.voiceUsers.push(newMember) // Add the member to voiceUsers
-          botconsole.out(`${newMember.user.tag} joined ${newMember.voiceChannel}`) // Log member joined
-        }
-      } else { // Otherwise
-        this.voiceUsers.splice(this.voiceUsers.indexOf(newMember), 1) // Remove member from voiceUsers
-        botconsole.out(`${newMember.user.tag} left ${oldMember.voiceChannel}`) // Log member left
+      if (newMember.voiceChannel && !oldMember.voiceChannel) { // If the newMember has a voice channel
+        addVoiceUser(newMember, this) // Attempt to add the user
+      } else if (newMember.voiceChannel && oldMember.voiceChannel && newMember.voiceChannelID !== oldMember.voiceChannelID) { // If the user has changed channels
+        removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user from the old channel
+        addVoiceUser(newMember, this) // Add the user to the new channel
+      } else if (!newMember.voiceChannel) { // Otherwise if the user no longer has a channel
+        removeVoiceUser(newMember, oldMember.voiceChannel, this) // Remove the user
       }
       this.rl.prompt() // Prompt stdin
     }).on('disconnect', (event) => { // On WebSocket disconnection
