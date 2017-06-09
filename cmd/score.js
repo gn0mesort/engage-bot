@@ -120,5 +120,17 @@ module.exports = {
     },
     'Display information about bonuses.',
     Command.FLAG.GENERAL
+  ),
+  'scoring': new Command(
+    function (message, self) {
+      let output = ''
+      for (let value in self.config.scoring) {
+        output += `${value}: ${self.config.scoring[value]} ${self.config.unit} ${value === 'speaking' ? ` / ${self.config.speakingInterval}ms` : ''}\n`
+      }
+      output += `bonus: ${self.config.bonus} ${self.config.unit} / ${self.config.bonusInterval}ms`
+      return message.author === 'CONSOLE' ? output : `\`\`\`\n${output}\n\`\`\``
+    },
+    'Display a table of actions and their scores.',
+    Command.FLAG.GENERAL
   )
 }
