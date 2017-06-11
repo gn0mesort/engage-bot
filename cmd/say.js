@@ -17,6 +17,7 @@ module.exports = {
         for (let guild of self.client.guilds.array()) { // For every server that the Bot has joined
           guild.defaultChannel.send(message.content).catch(function (err) {
             botconsole.out(err) // Log errors
+            self.rl.prompt() // Prompt stdin
           })
           return '' // Return an empty string
         }
@@ -37,6 +38,7 @@ module.exports = {
         if (text && (args[0] === guild.name || args[0] === guild.id)) { // If there is text to post and the first argument is the current server name or the current server id
           guild.defaultChannel.send(text).catch(function (err) {
             botconsole.out(err) // Log errors
+            self.rl.prompt() // Prompt stdin
           })
           return '' // Return an empty string
         }
@@ -54,6 +56,7 @@ module.exports = {
       if (message.content) { // If there is a message
         self.client.guilds.first().defaultChannel.send(message.content).catch(function (err) { // Send the message to the default channel of the first server
           botconsole.out(err) // Log errors
+          self.rl.prompt() // Prompt stdin
         })
         return '' // Return an empty string
       } else {
