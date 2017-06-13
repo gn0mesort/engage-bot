@@ -179,15 +179,16 @@ class Bot {
       this.rl.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
       if (message.channel.type === 'text') { // If the message is from a text channel
+        let content = message.content // Cache message content for output
         let response = this.handleCommand(message) // Try to handle it
         if (response) { // If the message was a command
-          botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${message.content}`) // Output message
+          botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
           message.channel.send(`${message.author} ${response}`).catch(function (err) { // Send response but catch message errors
             botconsole.error(err) // Log errors
           })
         } else { // Otherwise
           if (this.config.logAllMessages || message.author.id === this.client.user.id) { // If all messages should be logged or this message is from this bot
-            botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${message.content}`) // Output message
+            botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
           }
           scoreUser(message.author, 'message', this) // Score the user
           this.rl.prompt() // Prompt stdin
