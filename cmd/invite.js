@@ -22,10 +22,10 @@ module.exports = {
         }
         self.client.generateInvite(permissions).then((link) => { // Generate link
           botconsole.out(link) // Log link on success
-          self.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         }, (err) => {
           botconsole.out(err) // Log errors
-          self.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         })
         return '' // Return an empty string
       } catch (err) { // Catch errors

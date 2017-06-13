@@ -26,7 +26,7 @@ module.exports = {
       message.author.createDM().then(function (channel) { // Otherwise create a direct message to the author
         channel.send(output).catch(function (err) { // Then send the message
           botconsole.out(err) // Log errors
-          self.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         })
       })
       return 'Help is on the way!' // Return server message notifying the user

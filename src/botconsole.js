@@ -3,30 +3,69 @@
  * Defines console output for this bot
  */
 
+// Requires
+const readline = require('readline') // Node readline library
+const tty = require('tty') // Node tty library
+
 /**
- * botconsole object
+ * Defines a BotConsole object
  */
-const botconsole = {
+class BotConsole {
   /**
-   * Output a message to stdout
-   * @param {Object} message The message to output
-   * @param {Boolean} newLine Whether or not to print a new line character
+   * Construct a new BotConsole object
+   * @return {BotConsole} A newly constructed BotConsole object
    */
-  out: function (message, newLine) {
-    process.stdout.clearLine() // Clear prompts
-    process.stdout.cursorTo(0) // Set cursor to 0
-    process.stdout.write(`${message}${!newLine ? '\n' : ''}`) // Write to stdout
-  },
+  constructor () {
+    this.rl = readline.createInterface({ // Create readline interface
+      input: process.stdin, // Set input to stdin
+      output: process.stdout // Set output to stdout
+    })
+  }
+
   /**
-   * Output a message to stderr
-   * @param {Object} message The message to output
-   * @param {Boolean} newLine Whether or not to print a new line character
+   * Write to stdout in a way that is friendly to the bot's prompt
+   * @param {String} message The message to write
+   * @param {Boolean} noNewLine Whether or not to write a \n at the end of the message
    */
-  error: function (message, newLine) {
-    process.stderr.clearLine() // Clear prompts
-    process.stderr.cursorTo(0) // Set cursor to 0
-    process.stderr.write(`${message}${!newLine ? '\n' : ''}`) // Write to stderr
+  out (message, noNewLine) {
+    if (tty.isatty(process.stdout.fd)) { // If stdout is a tty
+      readline.clearLine(process.stdout, 0) // Clear the last line
+      readline.cursorTo(process.stdout, 0) // Reset the cursor
+    }
+    process.stdout.write(`${message}${noNewLine ? '' : '\n'}`) // Write to stdout
+  }
+
+  /**
+   * Write to stderr in a way that is friendly to the bot's prompt
+   * @param {String} message The message to write
+   * @param {Boolean} noNewLine Whether or not to write a \n at the end of the message
+   */
+  error (message, noNewLine) {
+    if (tty.isatty(process.stderr.fd)) { // If stderr is a tty
+      readline.clearLine(process.stderr, 0) // Clear the last line
+      readline.cursorTo(process.stderr, 0) // Reset the cursor
+    }
+    process.stderr.write(`${message}${!noNewLine ? '\n' : ''}`) // Write to stdout
+  }
+
+  /**
+   * Bot friendly prompt function. Only prompt if stdout is a tty
+   */
+  prompt () {
+    if (tty.isatty(process.stdout.fd)) { // If stdout is a tty
+      this.rl.prompt() // Prompt stdin
+    }
+  }
+
+  /**
+   * Check if stdout is a tty
+   * @return {Boolean} whether or not stdout is a tty
+   */
+  get isTty () {
+    return tty.isatty(process.stdout.fd)
   }
 }
+
+const botconsole = new BotConsole() // The actual BotConsole to export
 
 module.exports = botconsole

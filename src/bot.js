@@ -9,7 +9,6 @@ const UserScore = require('./userscore.js') // UserScore objects
 const Command = require('./command.js') // Command objects
 const botconsole = require('./botconsole.js') // botconsole functions
 const Discord = require('discord.js') // Discord.js library
-const readline = require('readline') // Node readline library
 const fs = require('fs') // Node filesystem library
 
 // Functions
@@ -128,10 +127,6 @@ class Bot {
    * @return {Bot} The newly contructed bot
    */
   constructor (config, scores) {
-    this.rl = readline.createInterface({ // Create a new readline interface
-      input: process.stdin, // Set input to stdin
-      output: process.stdout // Set output to stdout
-    })
     this.config = config || new Config() // Set the configuration or create a default configuration
     this.commands = require('./command-loader.js') // Load command modules
     this.client = new Discord.Client() // Create the client
@@ -149,13 +144,15 @@ class Bot {
             }
           }
         }
-        data.rl.prompt() // Prompt stdin
+        botconsole.prompt() // Prompt stdin
       }, this.config.intervals.speaking, this)
       this.client.setInterval(function (data) { // Set a function for writing score data to the disk
-        botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
+        if (botconsole.isTty) { // If the console is a tty
+          botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
+        }
         data.saveData() // Save data
         botconsole.out('Writing score data to disk...DONE!') // Output completed message
-        data.rl.prompt() // Prompt stdin
+        botconsole.prompt() // Prompt stdin
       }, this.config.intervals.save, this)
 
       for (let guild of this.client.guilds.array()) { // For every guild this bot is a member of
@@ -176,7 +173,7 @@ class Bot {
         }
       }
       this.client.user.setGame(`v${JSON.parse(fs.readFileSync('./package.json')).version}`) // Display current Bot version as status
-      this.rl.prompt() // Prompt stdin
+      botconsole.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
       if (message.channel.type === 'text') { // If the message is from a text channel
         let content = message.content // Cache message content for output
@@ -191,14 +188,14 @@ class Bot {
             botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
           }
           scoreUser(message.author, 'message', this) // Score the user
-          this.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         }
       }
     }).on('typingStop', (channel, user) => { // Trigger this event when a user stops typing
       if (channel.type === 'text') { // If the channel for this event is a text channel
         scoreUser(user, 'typing', this) // Score the user
       }
-      this.rl.prompt() // Prompt stdin
+      botconsole.prompt() // Prompt stdin
     }).on('voiceStateUpdate', (oldMember, newMember) => { // Trigger this event when a voice state update occurs
       if (newMember.voiceChannel && !oldMember.voiceChannel) { // If the newMember has a voice channel
         addVoiceUser(newMember, this) // Attempt to add the user
@@ -214,7 +211,7 @@ class Bot {
         addVoiceUser(newMember, this) // Attempt to add the user
       }
 
-      this.rl.prompt() // Prompt stdin
+      botconsole.prompt() // Prompt stdin
     }).on('disconnect', (event) => { // On WebSocket disconnection
       botconsole.error(`WebSocket Error ${event.code}: ${event.reason}`) // Log event
       process.exit(1) // Exit with an error code of 1
@@ -224,12 +221,12 @@ class Bot {
       }
     })
 
-    this.rl.on('line', (line) => { // Trigger this event when the administrator enters a command
+    botconsole.rl.on('line', (line) => { // Trigger this event when the administrator enters a command
       botconsole.out(this.handleCommand({ // handle this command and output the result
         content: line, // Set message content to the input
         author: 'CONSOLE' // Set message author to CONSOLE
       }))
-      this.rl.prompt() // Prompt stdin
+      botconsole.prompt() // Prompt stdin
     }).on('close', () => { // Trigger this event when stdin is closed
       process.exit(0) // Exit
     })
@@ -240,9 +237,12 @@ class Bot {
       this.saveData() // Save data
       botconsole.out('Saving data....DONE!') // Log done
       botconsole.out(`Exiting ${this.config.name} with code ${process.exitCode}`) // Log exit code
+    }).on('SIGINT', () => {
+      this.client.destroy() // Logout
+      this.saveData() // Save data
     })
 
-    this.rl.setPrompt(`${this.config.name}> `) // Set the prompt text
+    botconsole.rl.setPrompt(`${this.config.name}> `) // Set the prompt text
   }
 
 /**

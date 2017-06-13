@@ -18,10 +18,10 @@ module.exports = {
       if (fs.existsSync(args[0]) && !fs.statSync(args[0]).isDirectory()) { // If the file in the arguments exists and is not a directory
         self.client.user.setAvatar(args[0]).then(function (user) { // Set the avatar
           botconsole.out('Avatar set!') // Then output that the avatar was set
-          self.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         }).catch(function (err) {
           botconsole.error(err) // Log errors
-          self.rl.prompt() // Prompt stdin
+          botconsole.prompt() // Prompt stdin
         })
         return `Setting avatar to ${args[0]}`
       } else { // Otherwise
@@ -38,10 +38,10 @@ module.exports = {
     function (message, self) {
       self.client.user.setAvatar(self.client.user.defaultAvatarURL).then(function (user) { // Reset avatar
         botconsole.out('Avatar set!') // Then output that the avatar was set
-        self.rl.prompt() // Prompt stdin
+        botconsole.prompt() // Prompt stdin
       }).catch(function (err) {
         botconsole.error(err) // Log errors
-        self.rl.prompt() // Prompt stdin
+        botconsole.prompt() // Prompt stdin
       })
       return 'Resetting Avatar!'
     },
