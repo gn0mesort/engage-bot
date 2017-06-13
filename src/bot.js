@@ -24,7 +24,7 @@ const scoreUser = function (user, type, self) {
   if (!user.bot && self.config.scoring[type] !== 0) { // Ensure that the user is not a bot and the score for this action is not 0
     if (user.id in self.scores) { // If the score object has this user in it
       self.scores[user.id].score += self.config.scoring[type] // Increase score by scoring[type] points
-      if ('bonus' in self.scores[user.id].inventory && self.scores[user.id].inventory['bonus'] + self.config.bonusInterval < Date.now()) { // If the user has a bonus value and the value is less than the current time
+      if ('bonus' in self.scores[user.id].inventory && self.scores[user.id].inventory['bonus'] + self.config.intervals.bonus < Date.now()) { // If the user has a bonus value and the value is less than the current time
         getBonus(user, self) // Apply a bonus to the user
       } else if (!('bonus' in self.scores[user.id].inventory)) { // If they don't have a bonus yet
         getBonus(user, self) // Apply a bonus to the user
@@ -43,10 +43,10 @@ const scoreUser = function (user, type, self) {
  * @param {Bot} self The Bot that owns the scoring object for this user
  */
 const getBonus = function (user, self) {
-  if (self.config.bonus !== 0) { // If the bonus value is 0 do nothing
-    self.scores[user.id].score += self.config.bonus // Apply the bonus to the user's score
+  if (self.config.scoring.bonus !== 0) { // If the bonus value is 0 do nothing
+    self.scores[user.id].score += self.config.scoring.bonus // Apply the bonus to the user's score
     self.scores[user.id].inventory['bonus'] = Date.now() // Give the user a bonus object containing the current time in milliseconds
-    botconsole.out(`DAILY BONUS: ${user.tag}'s score increased by ${self.config.bonus}`) // Write bonus information to stdout
+    botconsole.out(`BONUS: ${user.tag}'s score increased by ${self.config.scoring.bonus}`) // Write bonus information to stdout
   }
 }
 
@@ -150,13 +150,13 @@ class Bot {
           }
         }
         data.rl.prompt() // Prompt stdin
-      }, this.config.speakingInterval, this)
+      }, this.config.intervals.speaking, this)
       this.client.setInterval(function (data) { // Set a function for writing score data to the disk
         botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
         data.saveData() // Save data
         botconsole.out('Writing score data to disk...DONE!') // Output completed message
         data.rl.prompt() // Prompt stdin
-      }, this.config.saveInterval, this)
+      }, this.config.intervals.save, this)
 
       for (let guild of this.client.guilds.array()) { // For every guild this bot is a member of
         guild.members.get(this.client.user.id).setNickname(this.config.name) // Set this bot's name in the guild

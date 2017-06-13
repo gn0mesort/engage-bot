@@ -132,12 +132,12 @@ module.exports = {
     function (message, self) {
       if (message.author.id in self.scores) { // If the message author has a score
         if ('bonus' in self.scores[message.author.id].inventory) { // If the message author has a bonus value
-          return `The bonus is ${self.config.bonus} ${self.config.unit}.\nYou received your last bonus at ${new Date(self.scores[message.author.id].inventory['bonus']).toUTCString()}!\nYou may earn another bonus at ${new Date(self.scores[message.author.id].inventory['bonus'] + self.config.bonusInterval).toUTCString()}!` // Return information about the message author's bonus
+          return `The bonus is ${self.config.scoring.bonus} ${self.config.unit}.\nYou received your last bonus at ${new Date(self.scores[message.author.id].inventory['bonus']).toUTCString()}!\nYou may earn another bonus at ${new Date(self.scores[message.author.id].inventory['bonus'] + self.config.intervals.bonus).toUTCString()}!` // Return information about the message author's bonus
         } else { // Otherwise
           return 'You have not yet earned a bonus!' // No bonus
         }
       } else if (message.author === 'CONSOLE') { // If the message author was the console
-        return `The bonus is ${self.config.bonus} ${self.config.unit}.\nYou may earn it every ${self.config.bonusInterval}ms.` // Return generic bonus info
+        return `The bonus is ${self.config.scoring.bonus} ${self.config.unit}.\nYou may earn it every ${self.config.intervals.bonus}ms.` // Return generic bonus info
       } else { // Otherwise
         return 'You have not yet earned a bonus!' // No bonus
       }
@@ -152,9 +152,8 @@ module.exports = {
     function (message, self) {
       let output = '' // Set output to ''
       for (let value in self.config.scoring) { // For every value in the scoring table
-        output += `${value}: ${self.config.scoring[value]} ${self.config.unit} ${value === 'speaking' ? ` / ${self.config.speakingInterval}ms` : ''}\n` // Output scoring information
+        output += `${value}: ${self.config.scoring[value]} ${self.config.unit} ${value in self.config.intervals ? ` / ${self.config.intervals[value]}ms` : ''}\n` // Output scoring information
       }
-      output += `bonus: ${self.config.bonus} ${self.config.unit} / ${self.config.bonusInterval}ms` // Output bonus information
       return message.author === 'CONSOLE' ? output : `\`\`\`\n${output}\n\`\`\`` // Return block text if the message came from Discord
     },
     'Display a table of actions and their scores.',

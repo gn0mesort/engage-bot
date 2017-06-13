@@ -29,15 +29,17 @@ class Config {
     this.scoring = options.scoring || { // Set the scoring object. Defaults to the following table
       message: 10,
       typing: 1,
-      speaking: 20
+      speaking: 20,
+      bonus: 100
     }
-    this.bonus = options.bonus || 100 // Set the bonus point total. Defaults to 100 points
-    this.bonusInterval = options.bonusInterval || 86400000 // Set the bonus interval in milliseconds. Defaults to 86400000 or 1 day
-    this.speakingInterval = options.speakingInterval || 10000 // Set the voice scoring inteveral in milliseconds. Defaults to 10000 or 10 seconds
-    this.saveInterval = options.saveInterval || 60000 // Set the save interval for the scores table in milliseconds. Defaults to 60000 or 1 minute
+    this.intervals = options.intervals || { // Set the intervals object. Defaults to the following table
+      bonus: 86400000,
+      speaking: 10000,
+      save: 60000
+    }
     this.unit = options.unit || 'points' // Set the scoring unit. This should be plural. Defaults to 'points'
-    this.biddingOpen = false // Set whether or not bidding is open. Defaults to false
     this.token = options.token || '' // Set the login token. This must be set to login properly
+    this.data = options.data || {} // Set other configuration data. Modules should write configuration info here. Defaults to an empty object
   }
 }
 

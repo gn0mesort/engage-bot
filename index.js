@@ -25,7 +25,24 @@ const getConfig = function (path) {
   if (fs.existsSync(`${savePath}/config.json`)) { // Check if a cached config exists
     config = JSON.parse(fs.readFileSync(`${savePath}/config.json`)) // Load the cached configuration
   }
-  return Object.assign(config, override) // Merge config and override and return
+  return deepAssign(config, override) // Merge config and override and return
+}
+
+/**
+ * Assign one object's values to another recursively
+ * @param {Object} objA The object to assign values to
+ * @param {Object} objB The object to assign values from
+ * @return {Object} The resulting value of objA
+ */
+const deepAssign = function (objA, objB) {
+  for (let prop in objB) { // For every property of objB
+    if (typeof objB[prop] !== 'object') { // If the property is not an object
+      objA[prop] = objB[prop] // Assign objA[prop] to objB[prop]
+    } else { // Otherwise
+      deepAssign(objA[prop], objB[prop]) // Do a deep assignment of objB[prop] to objA[prop]
+    }
+  }
+  return objA
 }
 
 /**
