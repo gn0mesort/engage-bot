@@ -64,4 +64,4 @@ const getScores = function (path) {
 // Main Script
 
 let engageBot = new Bot(getConfig(), getScores()) // Instantiate a new bot with the correct scores and configuration
-engageBot.login() // Login in to Discord
+engageBot.login() // Login to Discord
