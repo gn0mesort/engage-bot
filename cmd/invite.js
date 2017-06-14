@@ -44,8 +44,10 @@ module.exports = {
       for (let guild of self.client.guilds.array()) { // For every server in this bot's server list
         if (args[0] === guild.name || args[0] === guild.id) { // If the first argument matches the server name or id
           guild.leave() // Leave the server
+          return `Left ${guild.name}!`
         }
       }
+      return 'Server not found!'
     },
     'Leave the given server.\nArguments:\n`server`: A server name or id to leave.'
   )

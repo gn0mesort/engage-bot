@@ -212,22 +212,27 @@ class Bot {
       }
 
       botconsole.prompt() // Prompt stdin
-    }).on('disconnect', (event) => { // On WebSocket disconnection
+    }).on('disconnect', (event) => { // Trigger this event on WebSocket disconnection
       botconsole.error(`WebSocket Error ${event.code}: ${event.reason}`) // Log event
       process.exit(1) // Exit with an error code of 1
     }).on('channelDelete', (channel) => { // Trigger this event when a channel is deleted
       if (channel.id in this.voiceUsers) { // If the channel was in the voiceUsers table
         this.voiceUsers[channel.id] = [] // Clear the channel
       }
-    }).on('error', (err) => { // On Client Error
+    }).on('error', (err) => { // Trigger this event on Client Error
       botconsole.error(err) // Log error
+      botconsole.prompt() // Prompt stdin
     })
 
     botconsole.rl.on('line', (line) => { // Trigger this event when the administrator enters a command
-      botconsole.out(this.handleCommand({ // handle this command and output the result
-        content: line, // Set message content to the input
-        author: 'CONSOLE' // Set message author to CONSOLE
-      }))
+      try { // Try to handle message
+        botconsole.out(this.handleCommand({ // handle this command and output the result
+          content: line, // Set message content to the input
+          author: 'CONSOLE' // Set message author to CONSOLE
+        }))
+      } catch (err) { // Catch errors
+        botconsole.error(err) // Log errors
+      }
       botconsole.prompt() // Prompt stdin
     }).on('close', () => { // Trigger this event when stdin is closed
       process.exit(0) // Exit
