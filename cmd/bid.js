@@ -5,6 +5,7 @@
 
 // Requires
 const Command = require('../src/command.js') // Command objects
+const UserScore = require('../src/userscore.js') // UserScore objects
 
 /**
  * Clear all bids
@@ -132,7 +133,7 @@ module.exports = {
       if (message.author !== 'CONSOLE' && self.config.data.biddingOpen) { // If the message is not from the console and bidding is open
         let args = message.content.split(' ') // Split arguments
         if (args.length >= 2 && self.scores[message.author.id]) { // If there are at least 2 arguments and the author has a score
-          let inValue = Number(args[0]) // Set the input value to the parsed value of the first argument
+          let inValue = UserScore.validate(Number(args[0])) // Set the input value to the parsed value of the first argument
           let inData = args.slice(1).join(' ') // Set the data to the remaining arguments joined
           if (self.scores[message.author.id].score && inValue <= self.scores[message.author.id].score && inValue > 0) { // If the bid is within the range of the author's score
             self.scores[message.author.id].inventory['bid'] = { // Create new bid in the author's inventory
@@ -185,7 +186,7 @@ module.exports = {
     function (message, self) {
       let args = message.content.split(/\s+/g) // Split arugments
       if (message.author !== 'CONSOLE' && self.config.data.biddingOpen && args.length > 0 && self.scores[message.author.id]) { // If the authro is not the console and bidding is open and the author has a score and arguments were passed
-        let increase = Number(args[0]) // Set increase to the first argument's parsed value
+        let increase = UserScore.validate(Number(args[0])) // Set increase to the first argument's parsed value
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           if (self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase <= self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase > 0) { // If the increase is within the score range
             self.scores[message.author.id].inventory['bid'].value += increase // Increase the bid

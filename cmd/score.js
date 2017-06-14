@@ -44,7 +44,7 @@ module.exports = {
           } else { // Otherwise
             self.scores[id] = new UserScore(self.client.users.get(id).tag, value) // Create a new score for the user with the added value
           }
-          return `added ${value} ${self.config.unit} to ${self.scores[id].tag}`
+          return `added ${UserScore.validate(value)} ${self.config.unit} to ${self.scores[id].tag}`
         }
       }
       return `Can't add ${self.config.unit} to that user!` // Return an error otherwise
@@ -67,7 +67,7 @@ module.exports = {
           } else { // Otherwise
             self.scores[id] = new UserScore(self.client.users.get(id).tag, -value) // Create a new score for the user with the subtracted value
           }
-          return `subtracted ${value} ${self.config.unit} from ${self.scores[id].tag}`
+          return `subtracted ${UserScore.validate(value)} ${self.config.unit} from ${self.scores[id].tag}`
         }
       }
       return `Can't subtract ${self.config.unit} from that user!` // Otherwise return an error
@@ -90,7 +90,7 @@ module.exports = {
           } else { // Otherwise
             self.scores[id] = new UserScore(self.client.users.get(id).tag, value) // Create a new score with the given value
           }
-          return `set ${self.scores[id].tag}'s ${self.config.unit} to ${value}`
+          return `set ${self.scores[id].tag}'s ${self.config.unit} to ${UserScore.validate(value)}`
         }
       }
       return `Can't set ${self.config.unit} for that user!` // Otherwise return an error

@@ -3,23 +3,6 @@
  * Defines the UserScore object and related behavior
  */
 
-/**
- * Validate a score value
- * @param {Number} value The value to validate
- * @return {Number} A valid value between Number.MIN_SAFE_INTEGER and Number.MAX_SAFE_INTEGER. NaN values result in a 0
- */
-const validate = function (value) {
-  let r = value // Set r to the input value
-  if (!Number.isFinite(value) && value > 0) { // If Infinity
-    r = Number.MAX_SAFE_INTEGER // Set r to the max value
-  } else if (!Number.isFinite(value) && value < 0) { // If -Infinity
-    r = Number.MIN_SAFE_INTEGER // Set r to the min value
-  } else if (!Number.isFinite(value)) { // If NaN
-    r = 0 // Set r to 0
-  }
-  return r
-}
-
 
 /**
  * Defines a UserScore object that contains all data relevant to each user's scoring
@@ -51,7 +34,7 @@ class UserScore {
    * @param {Number} value The value to set. Will be validated
    */
   set score (value) {
-    this._score = validate(value) // Set the score to the validated input value
+    this._score = UserScore.validate(value) // Set the score to the validated input value
   }
 
   /**
@@ -64,6 +47,23 @@ class UserScore {
       score: this.score,
       inventory: this.inventory
     }
+  }
+
+  /**
+   * Validate a score value
+   * @param {Number} value The value to validate
+   * @return {Number} A valid value between Number.MIN_SAFE_INTEGER and Number.MAX_SAFE_INTEGER. NaN values result in a 0
+   */
+  static validate (value) {
+    let r = value // Set r to the input value
+    if (!Number.isFinite(value) && value > 0) { // If Infinity
+      r = Number.MAX_SAFE_INTEGER // Set r to the max value
+    } else if (!Number.isFinite(value) && value < 0) { // If -Infinity
+      r = Number.MIN_SAFE_INTEGER // Set r to the min value
+    } else if (!Number.isFinite(value)) { // If NaN
+      r = 0 // Set r to 0
+    }
+    return r >= 0 ? Math.floor(r) : Math.ceil(r) // Clamp values to the nearest integer
   }
 }
 

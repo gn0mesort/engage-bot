@@ -28,7 +28,7 @@ A minimal `config.json` file looks like this
 ```
 
 # Inviting
-To invite your bot to a server enter the `invite` command at the prompt and open the link it generates.
+To invite your bot to a server, enter the `invite` command at the prompt and open the link it generates.
 
 # Adding Commands
 To add a command to `engage-bot` create a new command module in the `cmd/` directory. Then fill it with this boiler plate:
