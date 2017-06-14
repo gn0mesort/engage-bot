@@ -132,10 +132,13 @@ class Bot {
     this.client = new Discord.Client() // Create the client
     this.scores = parseScores(scores) || {} // Parse scores or set scores to an empty object
     this.voiceUsers = {} // Create a table of users in voice chat
+    this.version = JSON.parse(fs.readFileSync('./package.json')).version
 
     this.client.on('ready', () => { // Trigger this event when the client logs in successfully
       botconsole.out('Login successful') // Output login message
-      botconsole.out(`Starting ${this.config.name}...`) // Output startup message
+      if (botconsole.isTty) { // If the console is a tty
+        botconsole.out(`Starting ${this.config.name}...`, true) // Output startup message
+      }
       this.client.setInterval(function (data) { // Set a function for checking if users are in voice chat
         for (let channel in data.voiceUsers) { // For every channel in voiceUsers
           if (data.voiceUsers[channel].length > 1) { // If the channel has more than one member
@@ -172,7 +175,10 @@ class Bot {
           }
         }
       }
-      this.client.user.setGame(`v${JSON.parse(fs.readFileSync('./package.json')).version}`) // Display current Bot version as status
+      this.client.user.setGame(`v${this.version}`) // Display current Bot version as status
+
+      botconsole.out(`Starting ${this.config.name}...DONE`) // Finished Startup
+      botconsole.out(`Version: ${this.version}\nType \`help\` for commands`)
       botconsole.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
       if (message.channel.type === 'text') { // If the message is from a text channel
@@ -240,7 +246,9 @@ class Bot {
 
     process.on('exit', () => { // Trigger this event when the program exits
       this.client.destroy() // Logout
-      botconsole.out('Saving data....', true) // Log saving data
+      if (botconsole.isTty) { // If the console is a tty
+        botconsole.out('Saving data....', true) // Log saving data
+      }
       this.saveData() // Save data
       botconsole.out('Saving data....DONE!') // Log done
       botconsole.out(`Exiting ${this.config.name} with code ${process.exitCode}`) // Log exit code
