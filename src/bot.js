@@ -177,7 +177,7 @@ class Bot {
       }
       this.client.user.setGame(`v${this.version}`) // Display current Bot version as status
 
-      botconsole.out(`Starting ${this.config.name}...DONE`) // Finished Startup
+      botconsole.out(`Starting ${this.config.name}...DONE!`) // Finished Startup
       botconsole.out(`Version: ${this.version}\nType \`help\` for commands`)
       botconsole.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
