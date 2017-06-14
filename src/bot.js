@@ -219,6 +219,8 @@ class Bot {
       if (channel.id in this.voiceUsers) { // If the channel was in the voiceUsers table
         this.voiceUsers[channel.id] = [] // Clear the channel
       }
+    }).on('error', (err) => { // On Client Error
+      botconsole.error(err) // Log error
     })
 
     botconsole.rl.on('line', (line) => { // Trigger this event when the administrator enters a command
