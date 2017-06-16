@@ -37,7 +37,7 @@ const getConfig = function (path) {
  */
 const deepAssign = function (objA, objB) {
   for (let prop in objB) { // For every property of objB
-    if (typeof objB[prop] !== 'object') { // If the property is not an object
+    if (typeof objB[prop] !== 'object' || !(prop in objA)) { // If the property is not an object or is undefined
       objA[prop] = objB[prop] // Assign objA[prop] to objB[prop]
     } else { // Otherwise
       deepAssign(objA[prop], objB[prop]) // Do a deep assignment of objB[prop] to objA[prop]

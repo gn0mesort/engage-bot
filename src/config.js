@@ -26,17 +26,18 @@ class Config {
     this.adminRoles = options.adminRoles || [] // Set the admin roles for this bot. Defaults to none
     this.adminPermissions = options.adminPermissions || [Permissions.FLAGS.ADMINISTRATOR] // Set the admin permissions for this bot. Defaults to Permissions.FLAGS.ADMINISTRATOR only
     this.adminUsers = options.adminUsers || [] // Set explicit bot admins. Defaults to none
-    this.scoring = options.scoring || { // Set the scoring object. Defaults to the following table
+    this.scoring = Object.assign({ // Set scoring table and merge with any input table
       message: 10,
       typing: 1,
       speaking: 20,
       bonus: 100
-    }
-    this.intervals = options.intervals || { // Set the intervals object. Defaults to the following table
+    }, options.scoring)
+    this.intervals = Object.assign({ // Set intervals table and merge with any input table
       bonus: 86400000,
       speaking: 10000,
-      save: 60000
-    }
+      save: 60000,
+      prune: 1209600000
+    }, options.intervals)
     this.unit = options.unit || 'points' // Set the scoring unit. This should be plural. Defaults to 'points'
     this.token = options.token || '' // Set the login token. This must be set to login properly
     this.data = options.data || {} // Set other configuration data. Modules should write configuration info here. Defaults to an empty object
