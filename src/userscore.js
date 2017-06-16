@@ -3,7 +3,6 @@
  * Defines the UserScore object and related behavior
  */
 
-
 /**
  * Defines a UserScore object that contains all data relevant to each user's scoring
  */
@@ -13,12 +12,14 @@ class UserScore {
    * @param {String} tag The user's username concatinated with a # and their discriminator
    * @param {Number} score The starting score for this user. Defaults to 0
    * @param {Object} inventory The inventory for this user. Defaults {}
+   * @param {Number} update The time this score was last updated
    */
-  constructor (tag, score, inventory) {
+  constructor (tag, score, inventory, update) {
     this._score = 0 // Set the backing score
     this.tag = tag // Set the tag
     this.score = score || 0 // Set the score to score or 0
     this.inventory = inventory || {} // Set the inventory to inventory or {}
+    this.update = update || Date.now()
   }
 
   /**
@@ -35,6 +36,7 @@ class UserScore {
    */
   set score (value) {
     this._score = UserScore.validate(value) // Set the score to the validated input value
+    this.update = Date.now() // Set last update time
   }
 
   /**
@@ -45,7 +47,8 @@ class UserScore {
     return {
       tag: this.tag,
       score: this.score,
-      inventory: this.inventory
+      inventory: this.inventory,
+      update: this.update
     }
   }
 

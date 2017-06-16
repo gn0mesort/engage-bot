@@ -42,7 +42,7 @@ const scoreUser = function (user, type, self) {
  * @param {Bot} self The Bot that owns the scoring object for this user
  */
 const getBonus = function (user, self) {
-  if (self.config.scoring.bonus !== 0) { // If the bonus value is 0 do nothing
+  if (self.config.scoring.bonus !== 0 && self.config.isValidInterval(self.config.intervals.bonus)) { // If the bonus value is 0 or the bonus interval isn't valid do nothing
     self.scores[user.id].score += self.config.scoring.bonus // Apply the bonus to the user's score
     self.scores[user.id].inventory['bonus'] = Date.now() // Give the user a bonus object containing the current time in milliseconds
     botconsole.out(`BONUS: ${user.tag}'s score increased by ${self.config.scoring.bonus}`) // Write bonus information to stdout
@@ -78,7 +78,7 @@ const isAdmin = function (message, self) {
  */
 const parseScores = function (scores) {
   for (let score in scores) { // For each score in the scores object
-    scores[score] = new UserScore(scores[score].tag, scores[score].score, scores[score].inventory) // Set scores[score] to the a corresponding UserScore
+    scores[score] = new UserScore(scores[score].tag, scores[score].score, scores[score].inventory, scores[score].update) // Set scores[score] to the a corresponding UserScore
   }
   return scores
 }
@@ -139,24 +139,36 @@ class Bot {
       if (botconsole.isTty) { // If the console is a tty
         botconsole.out(`Starting ${this.config.name}...`, true) // Output startup message
       }
-      this.client.setInterval(function (data) { // Set a function for checking if users are in voice chat
-        for (let channel in data.voiceUsers) { // For every channel in voiceUsers
-          if (data.voiceUsers[channel].length > 1) { // If the channel has more than one member
-            for (let voiceUser of data.voiceUsers[channel]) { // For every member of the channel
-              scoreUser(voiceUser.user, 'speaking', data) // Score the user
+
+      if (this.config.isValidInterval(this.config.intervals.speaking)) { // If speaking checks are enabled
+        this.client.setInterval(() => { // Set a function for checking if users are in voice chat
+          for (let channel in this.voiceUsers) { // For every channel in voiceUsers
+            if (this.voiceUsers[channel].length > 1) { // If the channel has more than one member
+              for (let voiceUser of this.voiceUsers[channel]) { // For every member of the channel
+                scoreUser(voiceUser.user, 'speaking', this) // Score the user
+              }
             }
           }
-        }
-        botconsole.prompt() // Prompt stdin
-      }, this.config.intervals.speaking, this)
-      this.client.setInterval(function (data) { // Set a function for writing score data to the disk
-        if (botconsole.isTty) { // If the console is a tty
-          botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
-        }
-        data.saveData() // Save data
-        botconsole.out('Writing score data to disk...DONE!') // Output completed message
-        botconsole.prompt() // Prompt stdin
-      }, this.config.intervals.save, this)
+          botconsole.prompt() // Prompt stdin
+        }, this.config.intervals.speaking)
+      }
+      if (this.config.isValidInterval(this.config.intervals.save)) { // If automatic saving is enabled
+        this.client.setInterval(() => { // Set a function for writing score data to the disk
+          if (botconsole.isTty) { // If the console is a tty
+            botconsole.out('Writing score data to disk...', true) // Write to stdout without a newline
+          }
+          this.saveData() // Save data
+          botconsole.out('Writing score data to disk...DONE!') // Output completed message
+          botconsole.prompt() // Prompt stdin
+        }, this.config.intervals.save)
+      }
+      if (this.config.isValidInterval(this.config.intervals.prune)) { // If score pruning is enabled
+        this.client.setInterval(() => { // Set a function for pruning the scores
+          this.pruneTable() // Prune the scores
+          botconsole.prompt() // Prompt stdin
+        }, this.config.intervals.prune)
+        this.pruneTable() // Clear any expired scores at start up
+      }
 
       for (let guild of this.client.guilds.array()) { // For every guild this bot is a member of
         guild.members.get(this.client.user.id).setNickname(this.config.name) // Set this bot's name in the guild
@@ -309,6 +321,31 @@ class Bot {
       }
     } else { // Otherwise
       return null // Return nothing
+    }
+  }
+
+  /**
+   * Delete a specific value from the scores table
+   * @param {String} id A valid user id found in the score's table to delete
+   * @return {Boolean} Whether or no the value was deleted
+   */
+  prune (id) {
+    if (id in this.scores) {
+      botconsole.out(`Deleting ${this.scores[id].tag} from table with a score of ${this.scores[id].score} ${this.config.unit}!`) // Output deletion message
+      return delete this.scores[id]
+    }
+    return false
+  }
+
+  /**
+   * Prune expired values in the scores table
+   */
+  pruneTable () {
+    for (let user in this.scores) { // For every stored UserScore
+      if (this.scores[user].update + this.config.intervals.prune < Date.now() || (this.scores[user].score === 0 && Object.keys(this.scores[user].inventory).length === 0)) { // If the score has expired or is 0 and has no inventory
+        botconsole.out(`Deleting ${this.scores[user].tag} from table with a score of ${this.scores[user].score} ${this.config.unit}!`) // Output deletion message
+        delete this.scores[user] // Delete the score
+      }
     }
   }
 }

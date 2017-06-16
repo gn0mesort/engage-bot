@@ -152,7 +152,15 @@ module.exports = {
     function (message, self) {
       let output = '' // Set output to ''
       for (let value in self.config.scoring) { // For every value in the scoring table
-        output += `${value}: ${self.config.scoring[value]} ${self.config.unit} ${value in self.config.intervals ? ` / ${self.config.intervals[value]}ms` : ''}\n` // Output scoring information
+        if (value in self.config.intervals) { // If the value has a corresponding interval
+          if (self.config.isValidInterval(self.config.intervals[value])) { // If the interval is valid
+            output += `${value}: ${self.config.scoring[value]} ${self.config.unit} / ${self.config.intervals[value]}ms\n` // Add output with interval info
+          } else { // Otherwise
+            output += `${value}: ${self.config.scoring[value]} ${self.config.unit} [INTERVAL DISABLED]\n` // Show that the interval is disabled
+          }
+        } else { // Otherwise
+          output += `${value}: ${self.config.scoring[value]} ${self.config.unit}\n` // Output just the score information
+        }
       }
       return message.author === 'CONSOLE' ? output : `\`\`\`\n${output}\n\`\`\`` // Return block text if the message came from Discord
     },

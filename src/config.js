@@ -42,6 +42,15 @@ class Config {
     this.token = options.token || '' // Set the login token. This must be set to login properly
     this.data = options.data || {} // Set other configuration data. Modules should write configuration info here. Defaults to an empty object
   }
+
+  /**
+   * Determine whether an interval is valid
+   * @param {Number} time An interval value to check
+   * @return {Boolean} Whether or not this interval is valid
+   */
+  isValidInterval (time) {
+    return time >= 0 && time <= 2147483647 // 2147483647 is the max valid value in most browsers
+  }
 }
 
 module.exports = Config
