@@ -19,28 +19,37 @@ const getConfig = function (path) {
   let override = {} // Set the override value to an empty object
   let cache = {} // Set the cache value to an empty object
   let savePath = path || './cache' // Set savePath to the value of path or './cache'
+  let data = {} // Set data to an empty object
   if (fs.existsSync(`${savePath}/config.json`)) { // Check if a cached config exists
     cache = JSON.parse(fs.readFileSync(`${savePath}/config.json`)) // Load the cached configuration
   }
   if (fs.existsSync('./config.json')) { // Check if a root level configuration file exists
     override = JSON.parse(fs.readFileSync('./config.json')) // Load the object and parse it
   }
-
-  return new Config(Object.assign(cache, override)) // Merge cache and override and return
+  deepAssign(data, cache.data) // Merge cache data into data backup
+  return new Config(deepAssign(deepAssign(cache, override, true), { data: data })) // Merge cache and override and return
 }
 
 /**
  * Assign one object's values to another recursively
  * @param {Object} objA The object to assign values to
  * @param {Object} objB The object to assign values from
+ * @param {Boolean} keepUndef Whether or not to keep undefined values in objB undefined in objA
  * @return {Object} The resulting value of objA
  */
-const deepAssign = function (objA, objB) {
+const deepAssign = function (objA, objB, keepUndef) {
   for (let prop in objB) { // For every property of objB
     if (typeof objB[prop] !== 'object' || !(prop in objA)) { // If the property is not an object or is undefined
       objA[prop] = objB[prop] // Assign objA[prop] to objB[prop]
     } else { // Otherwise
-      deepAssign(objA[prop], objB[prop]) // Do a deep assignment of objB[prop] to objA[prop]
+      deepAssign(objA[prop], objB[prop], keepUndef) // Do a deep assignment of objB[prop] to objA[prop]
+    }
+  }
+  if (keepUndef) { // If we should undefine values
+    for (let prop in objA) { // For every property of objA
+      if (!(prop in objB)) { // If the same property is not in objB
+        delete objA[prop] // Delete the property
+      }
     }
   }
   return objA
