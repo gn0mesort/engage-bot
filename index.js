@@ -16,16 +16,17 @@ const fs = require('fs') // Node filesystem library
  * @return {Config} The final configuration object
  */
 const getConfig = function (path) {
-  let config = new Config() // Set config to a new default Configuration
-  let override = null // Set the override value to null
+  let override = {} // Set the override value to an empty object
+  let cache = {} // Set the cache value to an empty object
   let savePath = path || './cache' // Set savePath to the value of path or './cache'
+  if (fs.existsSync(`${savePath}/config.json`)) { // Check if a cached config exists
+    cache = JSON.parse(fs.readFileSync(`${savePath}/config.json`)) // Load the cached configuration
+  }
   if (fs.existsSync('./config.json')) { // Check if a root level configuration file exists
     override = JSON.parse(fs.readFileSync('./config.json')) // Load the object and parse it
   }
-  if (fs.existsSync(`${savePath}/config.json`)) { // Check if a cached config exists
-    config = JSON.parse(fs.readFileSync(`${savePath}/config.json`)) // Load the cached configuration
-  }
-  return deepAssign(config, override) // Merge config and override and return
+
+  return new Config(Object.assign(cache, override)) // Merge cache and override and return
 }
 
 /**
