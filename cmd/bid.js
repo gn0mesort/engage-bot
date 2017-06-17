@@ -49,10 +49,10 @@ module.exports = {
    */
   'open-bidding': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is already open
+      if (self.data.biddingOpen) { // If bidding is already open
         return 'Bidding is already open!'
       } else { // Otherwise
-        self.config.data.biddingOpen = true // Open bidding
+        self.data.biddingOpen = true // Open bidding
         return 'Bidding has begun!'
       }
     },
@@ -64,13 +64,13 @@ module.exports = {
    */
   'close-bidding': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is open
+      if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bid
         let value = topBidder.inventory.bid.value // Get the value of the top bid
         let data = topBidder.inventory.bid.data // Get the data stored in the top bid
         clearBids(self) // Clear all bids
         topBidder.score -= value // Subtract the value of the bid from the top bidder
-        self.config.data.biddingOpen = false // Close bidding
+        self.data.biddingOpen = false // Close bidding
         return `${topBidder.tag} won with ${value} ${self.config.unit} on "${data}"!` // Return the top bidder
       } else { // Otherwise
         return 'Bidding is not open yet!'
@@ -84,9 +84,9 @@ module.exports = {
    */
   'clear-close-bidding': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is open
+      if (self.data.biddingOpen) { // If bidding is open
         clearBids(self) // Clear all bids
-        self.config.data.biddingOpen = false // Close bidding
+        self.data.biddingOpen = false // Close bidding
         return 'All bids have been cleared and bidding is now closed!'
       } else { // Otherwise
         return 'Bidding is not open yet!'
@@ -100,7 +100,7 @@ module.exports = {
    */
   'clear-bidding': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is open
+      if (self.data.biddingOpen) { // If bidding is open
         clearBids(self) // Clear bids
         return 'All bids have been cleared!'
       } else { // Otherwise
@@ -115,7 +115,7 @@ module.exports = {
    */
   'top-bid': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is open
+      if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bidder
         return `The top bidder is ${topBidder.tag} with ${topBidder.inventory.bid.value} ${self.config.unit} on "${topBidder.inventory.bid.data}"!` // Return the top bidder, their bid value, and data
       } else { // Otherwise
@@ -130,7 +130,7 @@ module.exports = {
    */
   'bid': new Command(
     function (message, self) {
-      if (message.author !== 'CONSOLE' && self.config.data.biddingOpen) { // If the message is not from the console and bidding is open
+      if (message.author !== 'CONSOLE' && self.data.biddingOpen) { // If the message is not from the console and bidding is open
         let args = message.content.split(' ') // Split arguments
         if (args.length >= 2 && self.scores[message.author.id]) { // If there are at least 2 arguments and the author has a score
           let inValue = UserScore.validate(Number(args[0])) // Set the input value to the parsed value of the first argument
@@ -163,7 +163,7 @@ module.exports = {
    */
   'cancel-bid': new Command(
     function (message, self) {
-      if (self.config.data.biddingOpen) { // If bidding is open
+      if (self.data.biddingOpen) { // If bidding is open
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           let value = self.scores[message.author.id].inventory['bid'].value // Set value to the bid value
           let data = self.scores[message.author.id].inventory['bid'].data // Set data to the bid data
@@ -185,7 +185,7 @@ module.exports = {
   'increase-bid': new Command(
     function (message, self) {
       let args = message.content.split(/\s+/g) // Split arugments
-      if (message.author !== 'CONSOLE' && self.config.data.biddingOpen && args.length > 0 && self.scores[message.author.id]) { // If the authro is not the console and bidding is open and the author has a score and arguments were passed
+      if (message.author !== 'CONSOLE' && self.data.biddingOpen && args.length > 0 && self.scores[message.author.id]) { // If the authro is not the console and bidding is open and the author has a score and arguments were passed
         let increase = UserScore.validate(Number(args[0])) // Set increase to the first argument's parsed value
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           if (self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase <= self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase > 0) { // If the increase is within the score range

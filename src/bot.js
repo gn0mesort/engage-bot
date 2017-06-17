@@ -124,14 +124,16 @@ class Bot {
    * Construct a new Bot object
    * @param {Config} config A configuration object for this object to use
    * @param {Object} scores A raw score object to be parsed into the Bot's score table
+   * @param {Object} data A table of data values to use for this Bot
    * @return {Bot} The newly contructed bot
    */
-  constructor (config, scores) {
+  constructor (config, scores, data) {
     this.config = config || new Config() // Set the configuration or create a default configuration
     this.commands = require('./command-loader.js') // Load command modules
     this.client = new Discord.Client() // Create the client
     this.scores = parseScores(scores) || {} // Parse scores or set scores to an empty object
     this.voiceUsers = {} // Create a table of users in voice chat
+    this.data = data || {} // Create a table of temporary data values for use by command modules
     this.version = JSON.parse(fs.readFileSync('./package.json')).version
 
     this.client.on('ready', () => { // Trigger this event when the client logs in successfully
@@ -299,6 +301,7 @@ class Bot {
       fs.mkdirSync(savePath) // Make the savePath
     }
     fs.writeFileSync(`${savePath}/config.json`, JSON.stringify(this.config, null, ' ')) // Write the config to the disk
+    fs.writeFileSync(`${savePath}/data.json`, JSON.stringify(this.data, null, ' ')) // Write data to the disk
     if (fs.existsSync(`${savePath}/scores.json`)) { // If the scores file exists
       fs.writeFileSync(`${savePath}/scores.bak.json`, fs.readFileSync(`${savePath}/scores.json`)) // Copy current scores to backup
     }

@@ -16,43 +16,16 @@ const fs = require('fs') // Node filesystem library
  * @return {Config} The final configuration object
  */
 const getConfig = function (path) {
-  let override = {} // Set the override value to an empty object
-  let cache = {} // Set the cache value to an empty object
+  let override = null // Set the override value to null
+  let cache = null // Set the cache value to null
   let savePath = path || './cache' // Set savePath to the value of path or './cache'
-  let data = {} // Set data to an empty object
   if (fs.existsSync(`${savePath}/config.json`)) { // Check if a cached config exists
     cache = JSON.parse(fs.readFileSync(`${savePath}/config.json`)) // Load the cached configuration
   }
   if (fs.existsSync('./config.json')) { // Check if a root level configuration file exists
     override = JSON.parse(fs.readFileSync('./config.json')) // Load the object and parse it
   }
-  deepAssign(data, cache.data) // Merge cache data into data backup
-  return new Config(deepAssign(deepAssign(cache, override, true), { data: data })) // Merge cache and override and return
-}
-
-/**
- * Assign one object's values to another recursively
- * @param {Object} objA The object to assign values to
- * @param {Object} objB The object to assign values from
- * @param {Boolean} keepUndef Whether or not to keep undefined values in objB undefined in objA
- * @return {Object} The resulting value of objA
- */
-const deepAssign = function (objA, objB, keepUndef) {
-  for (let prop in objB) { // For every property of objB
-    if (typeof objB[prop] !== 'object' || !(prop in objA)) { // If the property is not an object or is undefined
-      objA[prop] = objB[prop] // Assign objA[prop] to objB[prop]
-    } else { // Otherwise
-      deepAssign(objA[prop], objB[prop], keepUndef) // Do a deep assignment of objB[prop] to objA[prop]
-    }
-  }
-  if (keepUndef) { // If we should undefine values
-    for (let prop in objA) { // For every property of objA
-      if (!(prop in objB)) { // If the same property is not in objB
-        delete objA[prop] // Delete the property
-      }
-    }
-  }
-  return objA
+  return new Config(override || cache) // If the root config exists use it otherwise attempt to use the cached config
 }
 
 /**
@@ -71,7 +44,20 @@ const getScores = function (path) {
   return scores // Return the scores
 }
 
+/**
+ * Load a data object from the cache
+ * @param {String} path The path to search for data files. Defaults to './cache'
+ * @return {Object} The parsed data object or null if the data file wasn't found
+ */
+const getData = function (path) {
+  let savePath = path || './cache' // Set savePath to the value of path or './cache'
+  if (fs.existsSync(`${savePath}/data.json`)) { // If the data file exists
+    return JSON.parse(fs.readFileSync(`${savePath}/data.json`)) // Parse and return it
+  }
+  return null // Otherwise return nothing
+}
+
 // Main Script
 
-let engageBot = new Bot(getConfig(), getScores()) // Instantiate a new bot with the correct scores and configuration
+let engageBot = new Bot(getConfig(), getScores(), getData()) // Instantiate a new bot with the correct scores, configuration, and data
 engageBot.login() // Login to Discord

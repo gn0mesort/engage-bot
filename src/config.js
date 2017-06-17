@@ -40,7 +40,6 @@ class Config {
     }, options.intervals)
     this.unit = options.unit || 'points' // Set the scoring unit. This should be plural. Defaults to 'points'
     this.token = options.token || '' // Set the login token. This must be set to login properly
-    this.data = options.data || {} // Set other configuration data. Modules should write configuration info here. Defaults to an empty object
   }
 
   /**
