@@ -66,12 +66,16 @@ module.exports = {
     function (message, self) {
       if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bid
-        let value = topBidder.inventory.bid.value // Get the value of the top bid
-        let data = topBidder.inventory.bid.data // Get the data stored in the top bid
-        clearBids(self) // Clear all bids
-        topBidder.score -= value // Subtract the value of the bid from the top bidder
-        self.data.biddingOpen = false // Close bidding
-        return `${topBidder.tag} won with ${value} ${self.config.unit} on "${data}"!` // Return the top bidder
+        if (topBidder) { // If there was a top bidder
+          let value = topBidder.inventory.bid.value // Get the value of the top bid
+          let data = topBidder.inventory.bid.data // Get the data stored in the top bid
+          clearBids(self) // Clear all bids
+          topBidder.score -= value // Subtract the value of the bid from the top bidder
+          self.data.biddingOpen = false // Close bidding
+          return `${topBidder.tag} won with ${value} ${self.config.unit} on "${data}"!` // Return the top bidder
+        } else { // Otherwise
+          return `No bids were placed! Bidding closed!`
+        }
       } else { // Otherwise
         return 'Bidding is not open yet!'
       }
