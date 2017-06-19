@@ -24,9 +24,6 @@ module.exports = {
       }
     }
     output = JSON.stringify(safeJSONStringify.ensureProperties(root), null, ' ') || 'undefined' // Set the output to a safe stringification of the current object or undefined
-    if (output.length > 1900 && message.author !== 'CONSOLE') { // If the output is too long
-      output = 'OUTPUT TOO LONG' // Set the output to an error message
-    }
     return message.author === 'CONSOLE' ? output : `\n\`\`\`json\n${output}\n\`\`\`` // If sending to a server log in block text
   },
   'Log a property of this bot.\nArguments:\n`object`: The object to log in the format x.y.z etc.',

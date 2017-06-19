@@ -199,8 +199,16 @@ class Bot {
         let content = message.content // Cache message content for output
         let response = this.handleCommand(message) // Try to handle it
         if (response) { // If the message was a command
+          let splitOptions = {}
+          if (response.trim().startsWith('```')) {
+            let type = response.trim().split('\n')[0].split('`')[3]
+            splitOptions.prepend = `\`\`\`${type}\n`
+            splitOptions.append = '```'
+          } else {
+            splitOptions = true
+          }
           botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
-          message.channel.send(`${message.author} ${response}`).catch(function (err) { // Send response but catch message errors
+          message.channel.send(`${message.author} ${response}`, {split: splitOptions}).catch(function (err) { // Send response but catch message errors
             botconsole.error(err) // Log errors
           })
         } else { // Otherwise

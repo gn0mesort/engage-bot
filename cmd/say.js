@@ -14,7 +14,7 @@ module.exports = {
   'say-all': new Command(
     function (message, self) {
       for (let guild of self.client.guilds.array()) { // For every server that the Bot has joined
-        guild.defaultChannel.send(message.content || self.config.defaultMessage).catch(function (err) { // Send message
+        guild.defaultChannel.send((message.content || self.config.defaultMessage), {split: true}).catch(function (err) { // Send message
           botconsole.out(err) // Log errors
           botconsole.prompt() // Prompt stdin
         })
@@ -33,7 +33,7 @@ module.exports = {
       let text = message.content.replace(new RegExp(`^${args[0]}`, 'g'), '') // Get the text content by cleaning out the server name
       for (let guild of self.client.guilds.array()) { // For every server this bot has joined
         if (args[0] === guild.name || args[0] === guild.id) { // If there is text to post and the first argument is the current server name or the current server id
-          guild.defaultChannel.send(text || self.config.defaultMessage).catch(function (err) {
+          guild.defaultChannel.send((message.content || self.config.defaultMessage), {split: true}).catch(function (err) {
             botconsole.out(err) // Log errors
             botconsole.prompt() // Prompt stdin
           })
@@ -50,7 +50,7 @@ module.exports = {
    */
   'say': new Command(
     function (message, self) {
-      self.client.guilds.first().defaultChannel.send(message.content || self.config.defaultMessage).catch(function (err) { // Send the message to the default channel of the first server
+      self.client.guilds.first().defaultChannel.send((message.content || self.config.defaultMessage), {split: true}).catch(function (err) { // Send the message to the default channel of the first server
         botconsole.out(err) // Log errors
         botconsole.prompt() // Prompt stdin
       })
