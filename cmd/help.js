@@ -21,10 +21,10 @@ module.exports = {
         }
       }
       if (message.author === 'CONSOLE') { // If the message was sent from the console
-        return output // Return the message
+        return output.join('\n') // Return the message
       }
       message.author.createDM().then(function (channel) { // Otherwise create a direct message to the author
-        channel.send(output).catch(function (err) { // Then send the message
+        channel.send(output, {split: true}).catch(function (err) { // Then send the message
           botconsole.out(err) // Log errors
           botconsole.prompt() // Prompt stdin
         })
