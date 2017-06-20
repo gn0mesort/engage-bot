@@ -22,13 +22,13 @@ const UserScore = require('../src/userscore.js') // UserScore objects
  * @return {Number} The generated number
  */
 const random = function (low, high) {
-  if (!low || low < 0) {
-    low = 0
+  if (!low || low < 0) { // If low is undefined or less than 0
+    low = 0 // Set low to 0
   }
-  if (!high || high > Number.MAX_SAFE_INTEGER) {
-    high = Number.MAX_SAFE_INTEGER
+  if (!high || high > Number.MAX_SAFE_INTEGER) { // If high is undefined or greater than Number.MAX_SAFE_INTEGER
+    high = Number.MAX_SAFE_INTEGER // Set high to Number.MAX_SAFE_INTEGER
   }
-  return Math.floor(Math.random() * (high - low) + low)
+  return Math.floor(Math.random() * (high - low) + low) // Return a random value between low and high
 }
 
 module.exports = {
