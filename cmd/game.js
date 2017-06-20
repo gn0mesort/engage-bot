@@ -52,9 +52,9 @@ module.exports = {
           }
         }
         if (matches > 0) { // If matches were found
-          self.scores[message.author.id].score += value * (1 + ((1 + matches) * factor)) // Add winnings
+          self.scores[message.author.id].score += value * (1 + (matches * factor)) // Add winnings
         }
-        return `\nRESULTS:\n\n${wheel[results[0]]}    ${wheel[results[1]]}    ${wheel[results[2]]}    ${wheel[results[3]]}\n\n${matches > 0 ? 'You won' : 'You lost'} ${matches > 0 ? UserScore.validate(value * (1 + ((1 + matches) * factor))) : value} ${self.config.unit}!` // Output results
+        return `\nRESULTS:\n\n${wheel[results[0]]}    ${wheel[results[1]]}    ${wheel[results[2]]}    ${wheel[results[3]]}\n\n${matches > 0 ? 'You won' : 'You lost'} ${matches > 0 ? UserScore.validate(value * (1 + (matches * factor))) : value} ${self.config.unit}!` // Output results
       } else if (value <= 0) { // If the value was 0 or less
         return `You must bet at least 1 ${self.config.unit}!`
       } else { // Otherwise
