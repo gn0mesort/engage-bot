@@ -38,7 +38,7 @@ module.exports = {
       if (args.length >= 2) { // If there are 2 or more arguments
         let id = args[0].trim().replace(/<@!?([^&]+)>/g, '$1') // Set the id equal to the first argument after parsing
         let value = Number(args[1].trim()) // Set value to the number input in the second argument
-        if (id in self.scores || message.guild.members.has(id)) { // If the id value is a member of the message's guild or the id is in the scores table
+        if (self.client.users.has(id) || message.guild.members.has(id)) { // If the user is known to the bot or is in the message's guild
           if (id in self.scores) { // If id is in self.scores
             self.scores[id].score += value // Add the value
           } else { // Otherwise
@@ -61,7 +61,7 @@ module.exports = {
       if (args.length >= 2) { // If there are 2 or more arguments
         let id = args[0].trim().replace(/<@!?([^&]+)>/g, '$1') // Set the id equal to the first argument after parsing
         let value = Number(args[1].trim()) // Set value to the number input in the second argument
-        if (id in self.scores || message.guild.members.has(id)) { // If the id value is a member of the message's guild or the id is in the scores table
+        if (self.client.users.has(id) || message.guild.members.has(id)) { // If the user is known to the bot or is in the message's guild
           if (id in self.scores) { // If id is in self.scores
             self.scores[id].score -= value // Subtract the value
           } else { // Otherwise
@@ -84,7 +84,7 @@ module.exports = {
       if (args.length >= 2) { // If there are 2 or more arguments
         let id = args[0].trim().replace(/<@!?([^&]+)>/g, '$1') // Set the id equal to the first argument after parsing
         let value = Number(args[1].trim()) // Set value to the number input in the second argument
-        if (id in self.scores || message.guild.members.has(id)) { // If the id value is a member of the message's guild or the id is in the scores table
+        if (self.client.users.has(id) || message.guild.members.has(id)) { // If the user is known to the bot or is in the message's guild
           if (id in self.scores) { // If id is in self.scores
             self.scores[id].score = value // Set the value
           } else { // Otherwise
