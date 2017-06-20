@@ -9,7 +9,7 @@ const UserScore = require('../src/userscore.js') // UserScore objects
 
 // CONFIGURATION
 // wheel represents a single slot machine wheel's symbols change these to whatever you like change the machine's output
-// factor represents how the multiplication factor for the machine to use in scoring. Default is 0.25
+// factor represents the multiplication factor for the machine to use in scoring. Default is 0.25
 /******************************************************************************************************************/
 /**/ const wheel = ['💖', '🍌', '🍒', '🍆', '💯', '🔞', '⚜', '🤑', '☄', '👌', '🗽', '🍭', '🎱', '🍄', '🌚'] /**/
 /**/ const factor = 0.25                                                                                     /**/
