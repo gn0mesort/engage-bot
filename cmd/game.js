@@ -28,9 +28,9 @@ module.exports = {
    * A command for playing a slot machine game
    */
   'slots': new Command(function (message, self) {
-    let wheel = self.config.commandConfigs.slots.wheel
-    let factor = self.config.commandConfigs.slots.factor
-    let wheelCount = self.config.commandConfigs.slots.wheelCount
+    let wheel = self.config.commandConfigs.slots.wheel // Simplify wheel name
+    let factor = self.config.commandConfigs.slots.scoreFactor // Simplify factor name
+    let wheelCount = self.config.commandConfigs.slots.wheelCount // Simplify wheelCount name
     let args = message.content.split(/\s+/g) // Split arguements
     if (args.length > 0) { // If there are arguments
       let value = UserScore.validate(Number(args[0])) // Set value to the parsed and validated value of the first argument
