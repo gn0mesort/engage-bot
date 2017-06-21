@@ -27,7 +27,7 @@ class Config {
     this.adminRoles = options.adminRoles || [] // Set the admin roles for this bot. Defaults to none
     this.adminPermissions = options.adminPermissions || [Permissions.FLAGS.ADMINISTRATOR] // Set the admin permissions for this bot. Defaults to Permissions.FLAGS.ADMINISTRATOR only
     this.adminUsers = options.adminUsers || [] // Set explicit bot admins. Defaults to none
-    this.blacklist = options.blacklist || [] // Set of explicitly blacklisted users. Still scored but cannot invoke commands
+    this.blacklist = options.blacklist || [] // Set of explicitly blacklisted users.
     this.scoring = Object.assign({ // Set scoring table and merge with any input table
       message: 10,
       typing: 1,

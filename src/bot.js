@@ -20,7 +20,7 @@ const fs = require('fs') // Node filesystem library
  * @param {Bot} self The Bot that scoring was triggered for
  */
 const scoreUser = function (user, type, self) {
-  if (!user.bot && self.config.scoring[type] !== 0) { // Ensure that the user is not a bot and the score for this action is not 0
+  if (!user.bot && !isBanned(user.id, self) && self.config.scoring[type] !== 0) { // Ensure that the user is not a bot and not banned and the score for this action is not 0
     if (user.id in self.scores) { // If the score object has this user in it
       self.scores[user.id].score += self.config.scoring[type] // Increase score by scoring[type] points
       if ('bonus' in self.scores[user.id].inventory && self.scores[user.id].inventory['bonus'] + self.config.intervals.bonus < Date.now()) { // If the user has a bonus value and the value is less than the current time
@@ -117,6 +117,16 @@ const removeVoiceUser = function (guildMember, channel, self) {
 }
 
 /**
+ * Determine if a user is banned by id
+ * @param {String} id The id to check
+ * @param {Bot} self The bot to check the blacklist from
+ * @return {Boolean} Whether or no the user is banned
+ */
+const isBanned = function (id, self) {
+  return self.data.blacklist.indexOf(id) !== -1
+}
+
+/**
  * Defines the main behavior of engage-bot
  */
 class Bot {
@@ -196,9 +206,9 @@ class Bot {
       botconsole.out(`Version: ${this.version}\nType \`help\` for commands`)
       botconsole.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
-      if (message.channel.type === 'text' && (isAdmin(message, this) > 1 || this.data.blacklist.indexOf(message.author.id) === -1)) { // If the message is from a text channel and the user isn't banned
+      if (message.channel.type === 'text') { // If the message is from a text channel
         let content = message.content // Cache message content for output
-        let response = this.handleCommand(message) // Try to handle it
+        let response = !isBanned(message.author.id, this) ? this.handleCommand(message) : null // Handle the message if the user is not banned
         if (response) { // If the message was a command
           let splitOptions = {}
           if (response.trim().startsWith('```')) {
@@ -208,13 +218,13 @@ class Bot {
           } else {
             splitOptions = true
           }
-          botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
+          botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${Command.checkPermission(message.author, message.guild, this.config.adminRoles, this.config.adminPermissions, this.config.adminUsers) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
           message.channel.send(`${message.author} ${response}`, {split: splitOptions}).catch(function (err) { // Send response but catch message errors
             botconsole.error(err) // Log errors
           })
         } else { // Otherwise
           if (this.config.logAllMessages || message.author.id === this.client.user.id) { // If all messages should be logged or this message is from this bot
-            botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${isAdmin(message, this) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
+            botconsole.out(`${message.channel.type === 'dm' || message.channel.type === 'group' ? 'DM: ' : ''}${Command.checkPermission(message.author, message.guild, this.config.adminRoles, this.config.adminPermissions, this.config.adminUsers) > 1 ? '{ADMIN} ' : ''}${message.author.tag}: ${content}`) // Output message
           }
           scoreUser(message.author, 'message', this) // Score the user
           botconsole.prompt() // Prompt stdin

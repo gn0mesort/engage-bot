@@ -62,15 +62,17 @@ module.exports = {
     function (message, self) {
       let args = message.content.split(/\s+/g) // Split arguments
       let id = args.length > 0 ? args[0].trim().replace(/<@!?([^&]+)>/g, '$1') : '' // Clean user id if one is found
-      if (self.client.users.has(id)) { // If the user is known to the bot
+      if (self.client.users.has(id) && Command.checkPermission(self.client.users.get(id), message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers) < Command.FLAG.ADMIN) { // If the user is known to the bot and not an admin
         if (self.data.blacklist.indexOf(id) === -1) { // If the user isn't banned
           self.data.blacklist.push(id) // Ban the user
           return `${self.client.users.get(id).tag} was banned!`
         } else { // Otherwise
           return 'That user is already banned!'
         }
-      } else { // Otherwise
+      } else if (!self.client.users.has(id)) { // Otherwise if the user wasn't found
         return 'Can\'t ban an unknown user!'
+      } else { // Otherwise
+        return 'Can\'t ban admin users!'
       }
     },
     'Ban a user from issuing commands to this bot.\nArguments:\n`user`: The @ name or id of the user to ban.',

@@ -34,10 +34,10 @@ const checkPermission = function (user, guild, adminRoles, adminPermissions, adm
   if (user === 'CONSOLE') { // If the user is the Console
     return FLAG.CONSOLE // Console Permissions
   } else { // Otherwise
-    let guildMember = guild.members.get(user.id) // Set guildMember to the GuildMember associated with this user
+    let guildMember = guild ? guild.members.get(user.id) : null // Set guildMember to the GuildMember associated with this user
     let r = FLAG.GENERAL // Set r to general permissions
     for (let roleId of adminRoles) { // For every role id in adminRoles
-      if (guildMember.roles.has(roleId)) { // If the user has the role
+      if (guildMember && guildMember.roles.has(roleId)) { // If the user has the role
         r = FLAG.ADMIN // The user is an Admin
       }
     }
@@ -103,7 +103,7 @@ class Command {
    * @return {String} The response for this Command or null
    */
   do (message, self) {
-    if (this.commandPermission <= checkPermission(message.author, message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers)) { // If permissions are valid
+    if (this.commandPermission <= Command.checkPermission(message.author, message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers)) { // If permissions are valid
       return this.action(message, self) // Perform the Command
     } else if (self.config.displayChatErrors || message.author === 'CONSOLE') { // Otherwise if the bot is displaying errors or the Command came from the console
       return 'Invalid Permission!' // Return error
@@ -119,7 +119,34 @@ class Command {
    * @return {Boolean} Whether or not the message author has permission to use this Command
    */
   hasPermission (message, self) {
-    return this.commandPermission <= checkPermission(message.author, message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers)
+    return this.commandPermission <= Command.checkPermission(message.author, message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers)
+  }
+
+  /**
+   * Check if a user has permissions
+   * @param {Discord.User} user The user to check permissions for
+   * @param {Discord.Guild} guild The guild the user is from
+   * @param {Array} adminRoles An array of Discord.Role ids that grant admin permissions
+   * @param {Array} adminPermissions An array of Discord.Permissions that grant admin permissions
+   * @param {Array} adminUsers An array of Discord.User ids that grant admin permissions
+   * @return {Number} A number value indicating the permission level of the input user
+   */
+  static checkPermission (user, guild, adminRoles, adminPermissions, adminUsers) {
+    if (user === 'CONSOLE') { // If the user is the Console
+      return FLAG.CONSOLE // Console Permissions
+    } else { // Otherwise
+      let guildMember = guild ? guild.members.get(user.id) : null // Set guildMember to the GuildMember associated with this user
+      let r = FLAG.GENERAL // Set r to general permissions
+      for (let roleId of adminRoles) { // For every role id in adminRoles
+        if (guildMember && guildMember.roles.has(roleId)) { // If the user exists and has the role
+          r = FLAG.ADMIN // The user is an Admin
+        }
+      }
+      if ((guildMember && guildMember.permissions.has(adminPermissions)) || adminUsers.indexOf(user.id) !== -1) { // If the user exists and has Admin permissions or is explicitly listed as an Admin
+        r = FLAG.ADMIN // The user is an Admin
+      }
+      return r
+    }
   }
 }
 
