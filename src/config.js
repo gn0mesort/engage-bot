@@ -17,6 +17,7 @@ class Config {
    */
   constructor (options) {
     options = options || {} // If options was passed use it. Otherwise use an empty options object
+    options.commandConfigs = options.commandConfigs || {} // Set commandConfigs to the input value or an empty object
     this.prefix = options.prefix || '--' // Set the command prefix. Defaults to '--'
     this.name = options.name || 'engage-bot' // Set the bot name. Defaults to 'engage-bot'
     this.defaultMessage = options.defaultMessage || `${this.name} was here!` // Set the default message for say.js commands. Defaults to 'engage-bot was here!'
@@ -26,6 +27,7 @@ class Config {
     this.adminRoles = options.adminRoles || [] // Set the admin roles for this bot. Defaults to none
     this.adminPermissions = options.adminPermissions || [Permissions.FLAGS.ADMINISTRATOR] // Set the admin permissions for this bot. Defaults to Permissions.FLAGS.ADMINISTRATOR only
     this.adminUsers = options.adminUsers || [] // Set explicit bot admins. Defaults to none
+    this.blacklist = options.blacklist || [] // Set of explicitly blacklisted users. Still scored but cannot invoke commands
     this.scoring = Object.assign({ // Set scoring table and merge with any input table
       message: 10,
       typing: 1,
@@ -40,6 +42,13 @@ class Config {
     }, options.intervals)
     this.unit = options.unit || 'points' // Set the scoring unit. This should be plural. Defaults to 'points'
     this.token = options.token || '' // Set the login token. This must be set to login properly
+    this.commandConfigs = {
+      slots: Object.assign({
+        wheel: ['💖', '🍌', '🍒', '🍆', '💯', '🔞', '⚜', '🤑', '☄', '👌', '🗽', '🍭', '🎱', '🍄', '🌚'], // Represents a slot wheel for the slot machine
+        scoreFactor: 0.25, // The multiplier for scores in the slot machine game
+        wheelCount: 4 // The number of wheels for the slot machine to use
+      }, options.commandConfigs.slots)
+    }
   }
 
   /**
