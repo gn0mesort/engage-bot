@@ -133,8 +133,10 @@ class Bot {
     this.client = new Discord.Client() // Create the client
     this.scores = parseScores(scores) || {} // Parse scores or set scores to an empty object
     this.voiceUsers = {} // Create a table of users in voice chat
-    this.data = data || {} // Create a table of temporary data values for use by command modules
-    this.version = JSON.parse(fs.readFileSync('./package.json')).version
+    this.data = data || { // Create a table of temporary data values for use by command modules
+      blacklist: [] // The proper blacklist contains both explicitly banned users and users banned via input
+    }
+    this.version = JSON.parse(fs.readFileSync('./package.json')).version // Set version number
 
     this.client.on('ready', () => { // Trigger this event when the client logs in successfully
       botconsole.out('Login successful') // Output login message
@@ -195,7 +197,7 @@ class Bot {
       botconsole.out(`Version: ${this.version}\nType \`help\` for commands`)
       botconsole.prompt() // Prompt stdin
     }).on('message', (message) => { // Trigger this event when this bot receives a message
-      if (message.channel.type === 'text') { // If the message is from a text channel
+      if (message.channel.type === 'text' && (isAdmin(message, this) > 1 || this.data.blacklist.indexOf(message.author.id) === -1)) { // If the message is from a text channel and the user isn't banned
         let content = message.content // Cache message content for output
         let response = this.handleCommand(message) // Try to handle it
         if (response) { // If the message was a command
@@ -280,6 +282,11 @@ class Bot {
     })
 
     botconsole.rl.setPrompt(`${this.config.name}> `) // Set the prompt text
+    for (let id of this.config.blacklist) { // For every id in the explicit blacklist
+      if (this.data.blacklist.indexOf(id) === -1) { // If the id isn't in the data blacklist
+        this.data.blacklist.push(id) // Add the id to the blacklist
+      }
+    }
   }
 
 /**

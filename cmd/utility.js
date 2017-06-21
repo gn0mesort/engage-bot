@@ -54,5 +54,48 @@ module.exports = {
     },
     'Echo the input message.',
     Command.FLAG.GENERAL
+  ),
+  /**
+   * A command to ban users from accessing the bot
+   */
+  'ban': new Command(
+    function (message, self) {
+      let args = message.content.split(/\s+/g) // Split arguments
+      let id = args.length > 0 ? args[0].trim().replace(/<@!?([^&]+)>/g, '$1') : '' // Clean user id if one is found
+      if (self.client.users.has(id)) { // If the user is known to the bot
+        if (self.data.blacklist.indexOf(id) === -1) { // If the user isn't banned
+          self.data.blacklist.push(id) // Ban the user
+          return `${self.client.users.get(id).tag} was banned!`
+        } else { // Otherwise
+          return 'That user is already banned!'
+        }
+      } else { // Otherwise
+        return 'Can\'t ban an unknown user!'
+      }
+    },
+    'Ban a user from issuing commands to this bot.\nArguments:\n`user`: The @ name or id of the user to ban.',
+    Command.FLAG.ADMIN
+  ),
+  /**
+   * A command to unban users from accessing the bot
+   */
+  'unban': new Command(
+    function (message, self) {
+      let args = message.content.split(/\s+/g) // Split arguments
+      let id = args.length > 0 ? args[0].trim().replace(/<@!?([^&]+)>/g, '$1') : '' // Clean user id if one is found
+      if (self.client.users.has(id)) { // If the user is known to the bot
+        let index = self.data.blacklist.indexOf(id) // Find the index of the user in the blacklist
+        if (index !== -1) { // If the user is banned
+          self.data.blacklist.splice(index, 1) // Unban the user
+          return `${self.client.users.get(id).tag} was unbanned!`
+        } else { // Otherwise
+          return 'That user isn\'t banned!'
+        }
+      } else { // Otherwise
+        return 'Can\'t unban an unknown user!'
+      }
+    },
+    'Unban a user from issuing commands to this bot.\nArguments:\n`user`: The @ name or id of the user to ban.',
+    Command.FLAG.ADMIN
   )
 }

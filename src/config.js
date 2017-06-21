@@ -42,7 +42,7 @@ class Config {
     }, options.intervals)
     this.unit = options.unit || 'points' // Set the scoring unit. This should be plural. Defaults to 'points'
     this.token = options.token || '' // Set the login token. This must be set to login properly
-    this.commandConfigs = {
+    this.commandConfigs = { // Contains configuration data for additional commands
       slots: Object.assign({
         wheel: ['💖', '🍌', '🍒', '🍆', '💯', '🔞', '⚜', '🤑', '☄', '👌', '🗽', '🍭', '🎱', '🍄', '🌚'], // Represents a slot wheel for the slot machine
         scoreFactor: 0.25, // The multiplier for scores in the slot machine game
