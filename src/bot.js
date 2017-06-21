@@ -133,9 +133,8 @@ class Bot {
     this.client = new Discord.Client() // Create the client
     this.scores = parseScores(scores) || {} // Parse scores or set scores to an empty object
     this.voiceUsers = {} // Create a table of users in voice chat
-    this.data = data || { // Create a table of temporary data values for use by command modules
-      blacklist: [] // The proper blacklist contains both explicitly banned users and users banned via input
-    }
+    this.data = data || {} // Create a table of temporary data values for use by command modules
+    this.data.blacklist = data.blacklist || [] // The proper blacklist contains both explicitly banned users and users banned via input
     this.version = JSON.parse(fs.readFileSync('./package.json')).version // Set version number
 
     this.client.on('ready', () => { // Trigger this event when the client logs in successfully
