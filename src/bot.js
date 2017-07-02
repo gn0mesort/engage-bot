@@ -147,7 +147,7 @@ class Bot {
     this.data.blacklist = data.blacklist || [] // The proper blacklist contains both explicitly banned users and users banned via input
     this.version = JSON.parse(fs.readFileSync('./package.json')).version // Set version number
 
-    this.client.on('ready', () => { // Trigger this event when the client logs in successfully
+    this.client.once('ready', () => { // Trigger this event when the client logs in successfully
       botconsole.out('Login successful') // Output login message
       if (botconsole.isTty) { // If the console is a tty
         botconsole.out(`Starting ${this.config.name}...`, true) // Output startup message
