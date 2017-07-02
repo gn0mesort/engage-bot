@@ -65,6 +65,14 @@ module.exports = {
       if (self.client.users.has(id) && Command.checkPermission(self.client.users.get(id), message.guild, self.config.adminRoles, self.config.adminPermissions, self.config.adminUsers) < Command.FLAG.ADMIN) { // If the user is known to the bot and not an admin
         if (self.data.blacklist.indexOf(id) === -1) { // If the user isn't banned
           self.data.blacklist.push(id) // Ban the user
+          for (let channel in self.voiceUsers) { // For every channel of voiceUsers
+            let index = self.voiceUsers[channel].map((element) => { // Create an array of just user ids
+              return element.id
+            }).indexOf(id) // Find the index of the current id value in the array
+            if (index !== -1) { // If the value was found
+              self.voiceUsers[channel].splice(index, 1) // Remove the user
+            }
+          }
           return `${self.client.users.get(id).tag} was banned!`
         } else { // Otherwise
           return 'That user is already banned!'
@@ -89,6 +97,18 @@ module.exports = {
         let index = self.data.blacklist.indexOf(id) // Find the index of the user in the blacklist
         if (index !== -1) { // If the user is banned
           self.data.blacklist.splice(index, 1) // Unban the user
+          for (let guild of self.client.guilds.array()) { // For each guild
+            if (guild.members.has(id)) { // If this guild has this user
+              let member = guild.members.get(id) // Set member to the correct GuildMember
+              if (member.voiceChannel) { // If the member has a voice channel
+                if (member.voiceChannelID in self.voiceUsers) { // If the channel is in voiceUsers
+                  self.voiceUsers[member.voiceChannelID].push(member) // Push the member
+                } else { // Otherwise
+                  self.voiceUsers[member.voiceChannelID] = [member] // Create the voice channel in voiceUsers
+                }
+              }
+            }
+          }
           return `${self.client.users.get(id).tag} was unbanned!`
         } else { // Otherwise
           return 'That user isn\'t banned!'

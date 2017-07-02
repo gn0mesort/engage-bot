@@ -89,7 +89,7 @@ const parseScores = function (scores) {
  * @param {Bot} self The current bot instance
  */
 const addVoiceUser = function (guildMember, self) {
-  if (!guildMember.selfDeaf && !guildMember.serverDeaf) { // If not deafened
+  if (!guildMember.selfDeaf && !guildMember.serverDeaf && self.data.blacklist.indexOf(guildMember.id) === -1) { // If not deafened and not blacklisted
     if (guildMember.voiceChannelID in self.voiceUsers && self.voiceUsers[guildMember.voiceChannelID].indexOf(guildMember) === -1) { // If the channel is already in the table and guildMember is not in voiceUsers
       self.voiceUsers[guildMember.voiceChannelID].push(guildMember) // Push guildMember into the correct channel
       botconsole.out(`${guildMember.user.tag} joined ${guildMember.voiceChannel}`) // Log member joined
@@ -192,7 +192,7 @@ class Bot {
           if (channel.type === 'voice') { // If the channel is a voice channel
             this.voiceUsers[channel.id] = []
             for (let member of channel.members.array()) { // For every member of the channel
-              if (!member.user.bot && !member.selfDeaf && !member.serverDeaf) { // If the member is not a bot or deafened
+              if (!member.user.bot && !member.selfDeaf && !member.serverDeaf && this.data.blacklist.indexOf(member.id) === -1) { // If the member is not a bot and not deafened and not blacklisted
                 this.voiceUsers[channel.id].push(member) // Add this member to voiceUsers
                 botconsole.out(`Voice user ${member.user.tag} found!`) // Output user found
               }
