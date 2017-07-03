@@ -23,6 +23,9 @@ const scoreUser = function (user, type, self) {
   if (!user.bot && !isBanned(user.id, self) && self.config.scoring[type] !== 0) { // Ensure that the user is not a bot and not banned and the score for this action is not 0
     if (user.id in self.scores) { // If the score object has this user in it
       self.scores[user.id].score += self.config.scoring[type] // Increase score by scoring[type] points
+      if (self.scores[user.id].tag !== user.tag) { // If the user tag has changed since last scoring
+        self.scores[user.id].tag = user.tag // Change the tag
+      }
       if ('bonus' in self.scores[user.id].inventory && self.scores[user.id].inventory['bonus'] + self.config.intervals.bonus < Date.now()) { // If the user has a bonus value and the value is less than the current time
         getBonus(user, self) // Apply a bonus to the user
       } else if (!('bonus' in self.scores[user.id].inventory)) { // If they don't have a bonus yet
