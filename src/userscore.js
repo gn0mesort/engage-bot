@@ -59,9 +59,9 @@ class UserScore {
    */
   static validate (value) {
     let r = value // Set r to the input value
-    if (!Number.isFinite(value) && value > 0) { // If Infinity
+    if ((!Number.isFinite(value) && value > 0) || value > Number.MAX_SAFE_INTEGER) { // If Infinity or greater than the maximum integer
       r = Number.MAX_SAFE_INTEGER // Set r to the max value
-    } else if (!Number.isFinite(value) && value < 0) { // If -Infinity
+    } else if ((!Number.isFinite(value) && value < 0) || value < Number.MIN_SAFE_INTEGER) { // If -Infinity or smaller than the minimum integer
       r = Number.MIN_SAFE_INTEGER // Set r to the min value
     } else if (!Number.isFinite(value)) { // If NaN
       r = 0 // Set r to 0
