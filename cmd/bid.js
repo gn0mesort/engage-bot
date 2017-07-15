@@ -74,6 +74,7 @@ module.exports = {
           self.data.biddingOpen = false // Close bidding
           return `${topBidder.tag} won with ${value} ${self.config.unit} on "${data}"!` // Return the top bidder
         } else { // Otherwise
+          self.data.biddingOpen = false // Close bidding
           return `No bids were placed! Bidding closed!`
         }
       } else { // Otherwise
@@ -81,6 +82,44 @@ module.exports = {
       }
     },
     'Close bidding. Clear all users bids and deduct the winner\'s points',
+    Command.FLAG.ADMIN
+  ),
+  'close-bidding-in': new Command(
+    function (message, self) {
+      let args = message.content.split(/\s+/g) // Split arguments
+      let time = Number(args[0]) // Calculate time from arguments
+      if (self.data.biddingOpen && time > 0 && Number.isFinite(time)) { // If bidding is open and the timeout is valid
+        let interval = self.client.setInterval(() => { // Store interval so we can clear it
+          if (time % 5 === 0 && time > 0) { // If the time remaining is divisible by 5 and greater than 0
+            message.channel.send(`${time} seconds remaining until bidding closes!`) // Output the time
+            --time // Reduce by 1 second
+          } else if (time > 0) { // Otherwise if the time is greater than 0
+            --time // Reduce time by 1 second
+          } else { // Otherwise
+            let topBidder = topBid(self) // Get the top bid
+            if (topBidder) { // If there was a top bidder
+              let value = topBidder.inventory.bid.value // Get the value of the top bid
+              let data = topBidder.inventory.bid.data // Get the data stored in the top bid
+              clearBids(self) // Clear all bids
+              topBidder.score -= value // Subtract the value of the bid from the top bidder
+              self.data.biddingOpen = false // Close bidding
+              self.client.clearInterval(interval) // Clear interval
+              message.channel.send(`${topBidder.tag} won with ${value} ${self.config.unit} on "${data}"!`) // Return the top bidder
+            } else { // Otherwise
+              self.data.biddingOpen = false // Close bidding
+              self.client.clearInterval(interval) // Clear interval
+              message.channel.send(`No bids were placed! Bidding closed!`) // Return no bids
+            }
+          }
+        }, 1000)
+        return `Closing bidding in ${time} seconds!` // Return the time remaining
+      } else if (time <= 0 || !Number.isFinite(time)) { // If the timeout was unacceptable
+        return 'Timeout must be greater than 0 seconds and a valid number!'
+      } else { // Otherwise
+        return 'Bidding is not open yet!'
+      }
+    },
+    'Close bidding in the specified number of seconds.\nArguments:\n`time`: The amount of time in seconds to wait before closing bidding.',
     Command.FLAG.ADMIN
   ),
   /**
