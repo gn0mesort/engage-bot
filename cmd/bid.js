@@ -36,6 +36,10 @@ const topBid = function (self) {
       return -1
     } else if (a.inventory.bid.value < b.inventory.bid.value) { // If the last bid's value is less than the current bid's value
       return 1
+    } else if (a.inventory.bid.time < b.inventory.bid.time) { // If the last bid was made before the next bid
+      return -1
+    } else if (a.inventory.bid.time > b.inventory.bid.time) { // If the last bid was made after the next bid
+      return 1
     } else { // Otherwise
       return 0
     }
@@ -160,7 +164,11 @@ module.exports = {
     function (message, self) {
       if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bidder
-        return `The top bidder is ${topBidder.tag} with ${topBidder.inventory.bid.value} ${self.config.unit} on "${topBidder.inventory.bid.data}"!` // Return the top bidder, their bid value, and data
+        if (topBidder) {
+          return `The top bidder is ${topBidder.tag} with ${topBidder.inventory.bid.value} ${self.config.unit} on "${topBidder.inventory.bid.data}"!` // Return the top bidder, their bid value, and data
+        } else {
+          return 'No bids have been placed!'
+        }
       } else { // Otherwise
         return 'Bidding is not open yet!'
       }
@@ -181,7 +189,8 @@ module.exports = {
           if (self.scores[message.author.id].score && inValue <= self.scores[message.author.id].score && inValue > 0) { // If the bid is within the range of the author's score
             self.scores[message.author.id].inventory['bid'] = { // Create new bid in the author's inventory
               value: inValue,
-              data: inData
+              data: inData,
+              time: Date.now()
             }
             return `You bid ${inValue} ${self.config.unit} on "${inData}"`
           } else { // Otherwise
