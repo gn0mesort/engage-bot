@@ -242,6 +242,7 @@ module.exports = {
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           if (self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase <= self.scores[message.author.id].score && self.scores[message.author.id].inventory['bid'].value + increase > 0) { // If the increase is within the score range
             self.scores[message.author.id].inventory['bid'].value += increase // Increase the bid
+            self.scores[message.author.id].inventory['bid'].time = Date.now() // Update bid time for sorting
             return `Increased bid by ${increase} ${self.config.unit}`
           } else { // Otherwise
             return `Cannot increase bid by ${increase} ${self.config.unit}`
