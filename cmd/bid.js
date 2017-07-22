@@ -219,7 +219,7 @@ module.exports = {
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           let value = self.scores[message.author.id].inventory['bid'].value // Set value to the bid value
           let data = self.scores[message.author.id].inventory['bid'].data // Set data to the bid data
-          delete self.scores[message.author.id].inventory['bid'] // Clear the bid
+          self.scores[message.author.id].inventory['bid'] = undefined // Clear the bid
           return `Cleared your bid of ${value} ${self.config.unit} on ${data}` // Return bid information
         } else { // Otherwise
           return `You don't have a bid to clear!`
