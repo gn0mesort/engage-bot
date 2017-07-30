@@ -6,6 +6,7 @@
 // Requires
 const Command = require('../src/command.js') // Command objects
 const UserScore = require('../src/userscore.js') // UserScore objects
+const botconsole = require('../src/botconsole.js')
 
 /**
  * Clear all bids
@@ -14,7 +15,7 @@ const UserScore = require('../src/userscore.js') // UserScore objects
 const clearBids = function (self) {
   for (let user in self.scores) { // For every user in the scores table
     if ('bid' in self.scores[user].inventory) { // If they have a bid
-      self.scores[user].inventory['bid'] = undefined // Clear the bid
+      delete self.scores[user].inventory['bid'] // Clear the bid
     }
   }
 }
@@ -164,6 +165,7 @@ module.exports = {
     function (message, self) {
       if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bidder
+        botconsole.out(JSON.stringify(topBidder, null, ' '))
         if (topBidder) {
           return `The top bidder is ${topBidder.tag} with ${topBidder.inventory.bid.value} ${self.config.unit} on "${topBidder.inventory.bid.data}"!` // Return the top bidder, their bid value, and data
         } else {
@@ -219,7 +221,7 @@ module.exports = {
         if (self.scores[message.author.id].inventory['bid']) { // If the author has a bid
           let value = self.scores[message.author.id].inventory['bid'].value // Set value to the bid value
           let data = self.scores[message.author.id].inventory['bid'].data // Set data to the bid data
-          self.scores[message.author.id].inventory['bid'] = undefined // Clear the bid
+          delete self.scores[message.author.id].inventory['bid'] // Clear the bid
           return `Cleared your bid of ${value} ${self.config.unit} on ${data}` // Return bid information
         } else { // Otherwise
           return `You don't have a bid to clear!`
