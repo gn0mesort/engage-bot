@@ -6,7 +6,6 @@
 // Requires
 const Command = require('../src/command.js') // Command objects
 const UserScore = require('../src/userscore.js') // UserScore objects
-const botconsole = require('../src/botconsole.js')
 
 /**
  * Clear all bids
@@ -165,7 +164,6 @@ module.exports = {
     function (message, self) {
       if (self.data.biddingOpen) { // If bidding is open
         let topBidder = topBid(self) // Get the top bidder
-        botconsole.out(JSON.stringify(topBidder, null, ' '))
         if (topBidder) {
           return `The top bidder is ${topBidder.tag} with ${topBidder.inventory.bid.value} ${self.config.unit} on "${topBidder.inventory.bid.data}"!` // Return the top bidder, their bid value, and data
         } else {
