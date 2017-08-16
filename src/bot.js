@@ -148,7 +148,8 @@ class Bot {
     this.voiceUsers = {} // Create a table of users in voice chat
     this.data = data || {} // Create a table of temporary data values for use by command modules
     this.data.blacklist = data.blacklist || [] // The proper blacklist contains both explicitly banned users and users banned via input
-    this.version = JSON.parse(fs.readFileSync('./package.json')).version // Set version number
+    this.version = require('../package.json').version // Set version number
+    this.repository = require('../package.json').repository // Set url
 
     this.client.once('ready', () => { // Trigger this event when the client logs in successfully
       botconsole.out('Login successful') // Output login message
@@ -203,7 +204,7 @@ class Bot {
           }
         }
       }
-      this.client.user.setGame(`v${this.version}`) // Display current Bot version as status
+      this.client.user.setGame(`v${this.version}`, `${this.repository.url}`) // Display current Bot version as status
 
       botconsole.out(`Starting ${this.config.name}...DONE!`) // Finished Startup
       botconsole.out(`Version: ${this.version}\nType \`help\` for commands`)
