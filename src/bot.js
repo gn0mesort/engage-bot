@@ -256,7 +256,7 @@ class Bot {
 
       botconsole.prompt() // Prompt stdin
     }).on('guildMemberRemove', (member) => { // When a user leaves the server either by force or just by leaving
-      for (channel of member.guild.channels.array()) { // For each channel in the server
+      for (let channel of member.guild.channels.array()) { // For each channel in the server
         if (channel.type === 'voice') { // If the channel is the voice channel
           removeVoiceUser(member, channel, this); // Remove the leaving user from voiceUsers if possible
         }
